@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 
-from .order_data import MENU, Ingredients
-from .resources import RESOURCES
+from .coinage import process_coins
+from .order_data import MENU, Ingredients, ItemSpecs
+from .resources import RESOURCES, ResourceValidator
 from .style import decorator
 from .style.rich_colors import RichColors
+from .transactions import TransactionHandler
 
 task_decorator = decorator.StylizedIndentPrinter(
     style=RichColors.TASK, end="\n", use_output=True
 )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=False)
 class OrderMaker:
     order: str
 
@@ -19,7 +21,7 @@ class OrderMaker:
         return MENU[self.order].ingredients
 
     def execute(self):
-        tasks = ("deduct_ingredients", "response")
+        tasks = ("deduct_ingredients", "give_order")
         for task in tasks:
             getattr(self, task)()
 
@@ -38,5 +40,42 @@ class OrderMaker:
             self.add_ingredient(ingredient)
 
     @task_decorator
-    def response(self) -> str:
+    def give_order(self) -> str:
         return f"Here is your {self.order.title()}☕"
+
+
+@dataclass(slots=True)
+class OrderDirector:
+    order: str
+    profit: float = 0.0
+
+    @property
+    def drink_info(self) -> ItemSpecs:
+        return MENU[self.order]
+
+    @property
+    def drink_ingredients(self):
+        return self.drink_info.ingredients
+
+    @property
+    def drink_cost(self):
+        return self.drink_info.cost.amount
+
+    def process_order(self):
+        if self.is_valid_order():
+            print(f"{self.order.title()}: ${self.drink_cost:.2f}")
+            payment = process_coins()
+            transaction = TransactionHandler(payment, self.drink_cost)
+            if transaction.execute():
+                self.profit += self.drink_cost
+                OrderMaker(self.order).execute()
+
+    def is_valid_order(self):
+        return (
+            self.drink_info
+            and ResourceValidator(self.drink_ingredients).validate()
+        )
+
+    @task_decorator
+    def fetch_order_info(self):
+        return f"{self.order.title()}: ${self.drink_cost:.2f}"
