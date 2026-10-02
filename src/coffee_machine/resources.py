@@ -2,10 +2,13 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum, auto
 
-from .ingredients import Ingredients
+from .order_data import Ingredients
 from .style import decorator
+from .style.rich_colors import RichColors
 
-task_decorator = decorator.ColorizedIndentPrinter(style="Warning", indent=1)
+task_decorator = decorator.ColorizedIndentPrinter(
+    style=RichColors.WARNING, indent=1
+)
 
 
 @dataclass(slots=True)
@@ -33,6 +36,15 @@ class Resources(Mapping[str, int]):
 
     def __len__(self):
         return len(self.__dataclass_fields__)
+
+    @task_decorator
+    def get_info(self, key: str) -> str:
+        unit = Ingredients.get_units(key)
+        return f"{key.title()}: {getattr(self, key)}{unit}"
+
+    def get_all_info(self):
+        for key in self:
+            self.get_info(key)
 
 
 RESOURCES = Resources(water=300, milk=200, coffee=100)

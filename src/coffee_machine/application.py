@@ -5,7 +5,7 @@ from rich.console import Console
 
 from .coinage import process_coins
 from .exception.decorator.abort_decorator import AbortDecorator
-from .ingredients import MENU, Ingredients
+from .order_data import MENU, Ingredients
 from .orders import OrderMaker
 from .resources import RESOURCES, ResourceValidator
 from .style import decorator
@@ -13,7 +13,9 @@ from .style.decorator.figletizer import FontType
 from .style.rich_colors import RichColors
 from .transactions import TransactionHandler
 
-task_decorator = decorator.ColorizedIndentPrinter(style="Warning", indent=1)
+task_decorator = decorator.StylizedIndentPrinter(
+    style=RichColors.WARNING, indent=1, end="\n", use_output=True
+)
 
 
 MENU_ITEMS = tuple(drink_name for drink_name in MENU)
@@ -35,7 +37,6 @@ def get_title():
 class CoffeeMachine:
     is_on: bool = True
     profit: float = 0.0
-    # resources: dict = field(default_factory=lambda: RESOURCES)
 
     def process_drink_order(self, user_choice: str):
         drink = MENU.get(user_choice)
@@ -59,31 +60,23 @@ class CoffeeMachine:
             user_choice = console.input(user_input())
             options = {
                 "quit": turn_off,
-                "report": get_report,
+                "report": self.get_report,
             }
             if handler := options.get(user_choice):
                 handler()
                 continue
             self.process_drink_order(user_choice)
 
+    @task_decorator
+    def get_report(self):
+        RESOURCES.get_all_info()
+        return f"Money: ${self.profit:.2f}"
+
 
 @task_decorator
 def turn_off(self):
     self.is_on = False
     return "Thank you!"
-
-
-@task_decorator
-def get_item_info(self, key: str) -> str:
-    unit = "g" if key == "coffee" else "ml"
-    return f"{key.title()}: {RESOURCES[key]}{unit}"
-
-
-@task_decorator
-def get_report(self):
-    for key in RESOURCES:
-        self.get_item_info(key)
-    return f"Money: ${self.profit:.2f}"
 
 
 def run():
