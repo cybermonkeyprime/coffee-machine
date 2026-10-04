@@ -5,6 +5,7 @@ from functools import wraps
 
 from rich.console import Console
 
+from ..rich_colors import RichColors
 from .protocol.decorator_protocols import GenericDecorator
 
 console = Console()
@@ -17,16 +18,15 @@ class OutputPrinter(GenericDecorator):
     prefix: str = ""
     use_color: bool = False
     suffix: str = "\n"
-    color: str = "non_error"
+    color: RichColors = RichColors.NON_ERROR
 
     def __call__(self, func: Callable) -> Callable:
         """Wraps the function to print its output with specified formatting."""
 
         @wraps(func)
         def wrapper(*args, **kwargs) -> object:
-            from ..rich_colors import RichColors
 
-            style = RichColors[self.color.upper()]
+            style = self.color
             result = func(*args, **kwargs)
 
             if result is not None:

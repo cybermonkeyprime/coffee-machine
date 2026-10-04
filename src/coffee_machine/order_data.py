@@ -24,7 +24,7 @@ class Ingredients(Mapping[str, int]):
 
     @classmethod
     def get_units(cls, key):
-        return "g" if key == cls.coffee else "ml"
+        return "g" if key == "coffee" else "ml"
 
 
 @dataclass(frozen=True, slots=True)

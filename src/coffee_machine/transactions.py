@@ -31,7 +31,7 @@ class TransactionHandler:
 
     @task_decorator
     def has_change_message(self, change: float):
-        return f"Your change is ${change:.2f}"
+        return f"Your change is ${change:.2f}\n"
 
     def transaction_failure(self):
         return self.money_received < self.item_cost

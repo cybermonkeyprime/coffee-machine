@@ -8,7 +8,14 @@ from .style.rich_colors import RichColors
 from .transactions import TransactionHandler
 
 task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.TASK, end="\n", use_output=True
+    style=RichColors.VARIABLE, indent=1, end="\n", use_output=True
+)
+task_padded_decorator = decorator.StylizedIndentPrinter(
+    style=RichColors.VARIABLE,
+    indent=1,
+    begin="\n\n",
+    end="\n\n",
+    use_output=True,
 )
 
 
@@ -21,7 +28,7 @@ class OrderMaker:
         return MENU[self.order].ingredients
 
     def execute(self):
-        tasks = ("deduct_ingredients", "give_order")
+        tasks = ("deduct_ingredients", "order_prep", "give_order")
         for task in tasks:
             getattr(self, task)()
 
@@ -32,12 +39,31 @@ class OrderMaker:
 
     @task_decorator
     def add_ingredient(self, ingredient: str):
+        unit = Ingredients.get_units(ingredient)
+        return f"Adding {self.order_ingredients[ingredient]}{unit} of {ingredient}"
 
-        return f" Adding {ingredient} - {self.order_ingredients[ingredient]}"
+    def order_prep(self):
+        tasks = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
+        for task in tasks:
+            callback = getattr(self, task)
+            callback()
 
-    def simulate_order_processing(self):
+    @task_padded_decorator
+    def prep_msg(self):
+        return "Preparing your order ..."
+
+    def add_ingredients(self) -> None:
         for ingredient in self.order_ingredients:
             self.add_ingredient(ingredient)
+        print()
+
+    @task_padded_decorator
+    def blend_order(self) -> str:
+        return "Blendng it all together ..."
+
+    @task_decorator
+    def heat_order(self) -> str:
+        return "Heating to 96°C ...\n"
 
     @task_decorator
     def give_order(self) -> str:

@@ -1,6 +1,6 @@
 # src/ota_installer/decorators/colorizer.py
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import wraps
 
 from ..rich_colors import RichColors
