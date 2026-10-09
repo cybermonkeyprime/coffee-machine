@@ -1,19 +1,14 @@
 # src/ota_installer/style/rich_colors.py
-from enum import StrEnum
+from enum import StrEnum, auto
 
 
 class RichColors(StrEnum):
     """Enumeration for rich color styles."""
 
-    TITLE = "green bold"
-    AUTHOR = "white"
-    VERSION = "yellow"
-    SEPARATOR = "green bold"
-    TASK = "green bold"
-    VARIABLE = "yellow"
-    ERROR = "red bold"
-    WARNING = "yellow"
-    NON_ERROR = "white"
+    BOLD_GREEN = "green bold"
+    BOLD_RED = "red bold"
+    YELLOW = auto()
+    WHITE = auto()
 
     def tag(self, closing: bool = False) -> str:
         """Constructs the tag for the rich style."""

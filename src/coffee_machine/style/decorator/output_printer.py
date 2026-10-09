@@ -18,7 +18,7 @@ class OutputPrinter(GenericDecorator):
     prefix: str = ""
     use_color: bool = False
     suffix: str = "\n"
-    color: RichColors = RichColors.NON_ERROR
+    color: RichColors = RichColors.WHITE
 
     def __call__(self, func: Callable) -> Callable:
         """Wraps the function to print its output with specified formatting."""

@@ -14,7 +14,7 @@ class StylizedIndentPrinter(GenericDecorator):
     function's output.
     """
 
-    style: RichColors = RichColors.VARIABLE
+    style: RichColors = RichColors.YELLOW
     indent: int = 0
     begin: str = ""
     end: str = ""

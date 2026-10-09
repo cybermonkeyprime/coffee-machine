@@ -8,10 +8,10 @@ from .style.rich_colors import RichColors
 from .transactions import TransactionHandler
 
 task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.VARIABLE, indent=1, end="\n", use_output=True
+    style=RichColors.YELLOW, indent=1, end="\n", use_output=True
 )
 task_padded_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.VARIABLE,
+    style=RichColors.YELLOW,
     indent=1,
     begin="\n\n",
     end="\n\n",

@@ -41,7 +41,7 @@ class Colorizer(StringReturningDecorator):
 
 def main() -> None:
     # Example usage
-    colorizer = Colorizer(style=RichColors.TASK)
+    colorizer = Colorizer(style=RichColors.BOLD_GREEN)
 
     @colorizer
     def greet(name: str) -> str:

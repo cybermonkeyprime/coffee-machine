@@ -4,7 +4,7 @@ from .style import decorator
 from .style.rich_colors import RichColors
 
 task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.WARNING, indent=1, use_output=True, end="\n"
+    style=RichColors.YELLOW, indent=1, use_output=True, end="\n"
 )
 
 

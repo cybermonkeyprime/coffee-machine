@@ -6,10 +6,10 @@ from .style import decorator
 from .style.rich_colors import RichColors
 
 task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.WARNING, indent=1, use_output=False
+    style=RichColors.YELLOW, indent=1, use_output=False
 )
 print_task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.TASK, indent=1, use_output=True, end="\n\n"
+    style=RichColors.BOLD_GREEN, indent=1, use_output=True, end="\n\n"
 )
 
 

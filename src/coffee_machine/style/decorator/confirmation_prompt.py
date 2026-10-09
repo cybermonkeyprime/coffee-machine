@@ -40,7 +40,7 @@ class ConfirmationPrompt:
 
     def get_key_option(self) -> str:
         """Return a string of valid key options."""
-        style = RichColors.NON_ERROR
+        style = RichColors.WHITE
         return f"{style.beginning()}{PromptType.KEY_OPTION}{style.ending()}"
 
     def get_message(self) -> str:
@@ -63,7 +63,7 @@ class ConfirmationPrompt:
         def func():
             return self.get_message()
 
-        decorated_func = Colorizer(style=RichColors.TASK)(func)
+        decorated_func = Colorizer(style=RichColors.BOLD_GREEN)(func)
         console.print(decorated_func(), end="")
 
     @staticmethod
@@ -75,7 +75,7 @@ class ConfirmationPrompt:
         def func():
             return PromptType.ERROR
 
-        decorated_func = Colorizer(style=RichColors.VARIABLE)(func)
+        decorated_func = Colorizer(style=RichColors.YELLOW)(func)
         decorated_func = IndentWrapper(interval=1)(decorated_func)
 
         return decorated_func()

@@ -36,7 +36,7 @@ class AbortDecorator(GenericDecorator):
             )
 
         decorated = style.StylizedIndentPrinter(
-            style=RichColors.WARNING,
+            style=RichColors.YELLOW,
             indent=1,
             use_output=True,
         )(message)

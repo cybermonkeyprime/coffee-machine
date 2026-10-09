@@ -12,17 +12,17 @@ from .style.decorator.figletizer import FontType
 from .style.rich_colors import RichColors
 
 task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.WARNING, indent=1, end="\n", use_output=True
+    style=RichColors.YELLOW, indent=1, end="\n", use_output=True
 )
 title_decorater = decorator.StyledFigletPrinter(
-    font=FontType.SLANT, use_output=True, style=RichColors.VARIABLE
+    font=FontType.SLANT, use_output=True, style=RichColors.YELLOW
 )
 
 
 MENU_ITEMS = tuple(drink_name for drink_name in MENU)
 
 
-@decorator.Colorizer(style=RichColors.TASK)
+@decorator.Colorizer(style=RichColors.BOLD_GREEN)
 def user_input():
     return f"What would you like? ({'/'.join(MENU_ITEMS)}): "
 

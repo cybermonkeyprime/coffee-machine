@@ -6,7 +6,7 @@ from .style import decorator
 from .style.rich_colors import RichColors
 
 task_decorator = decorator.ColorizedIndentPrinter(
-    style=RichColors.WARNING, indent=1
+    style=RichColors.YELLOW, indent=1
 )
 
 
