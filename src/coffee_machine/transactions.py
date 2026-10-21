@@ -24,13 +24,13 @@ class TransactionHandler:
     def calculate_change(self) -> float:
         return round(self.money_received - self.item_cost, 2)
 
-    @DecoratorType.PRINT_IN_GREEN.value
+    @DecoratorType.PRINT_IN_GREEN()
     def has_change_message(self, change: float):
         return f"Your change is ${change:.2f}\n"
 
     def transaction_failure(self):
         return self.money_received < self.item_cost
 
-    @DecoratorType.PRINT_PADDED_RED.value
+    @DecoratorType.PRINT_PADDED_RED()
     def transaction_failure_message(self) -> str:
         return "Sorry! That's not enough money. Money refunded."

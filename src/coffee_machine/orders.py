@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from .coinage import process_coins
-from .order_data import MENU, Ingredients, ItemSpecs
+from .order_data import MENU, DrinkType, Ingredients, ItemSpecs
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
 from .transactions import TransactionHandler
@@ -25,7 +25,7 @@ class OrderMaker:
         for item, amount in self.order_ingredients.items():
             RESOURCES[item] -= amount
 
-    @DecoratorType.PRINT_IN_YELLOW.value
+    @DecoratorType.PRINT_IN_YELLOW()
     def add_ingredient(self, ingredient: str):
         unit = Ingredients.get_units(ingredient)
         return f"Adding {self.order_ingredients[ingredient]}{unit} of {ingredient}"
@@ -36,7 +36,7 @@ class OrderMaker:
             callback = getattr(self, task)
             callback()
 
-    @DecoratorType.PRINT_PADDED_YELLOW.value
+    @DecoratorType.PRINT_PADDED_YELLOW()
     def prep_msg(self):
         return "Preparing your order ..."
 
@@ -45,15 +45,15 @@ class OrderMaker:
             self.add_ingredient(ingredient)
         print()
 
-    @DecoratorType.PRINT_PADDED_YELLOW.value
+    @DecoratorType.PRINT_PADDED_YELLOW()
     def blend_order(self) -> str:
         return "Blendng it all together ..."
 
-    @DecoratorType.PRINT_IN_YELLOW.value
+    @DecoratorType.PRINT_IN_YELLOW()
     def heat_order(self) -> str:
         return "Heating to 96°C ...\n"
 
-    @DecoratorType.PRINT_IN_YELLOW.value
+    @DecoratorType.PRINT_IN_YELLOW()
     def give_order(self) -> str:
         return f"Here is your {self.order.title()}☕"
 
@@ -77,7 +77,6 @@ class OrderDirector:
 
     def process_order(self):
         if self.is_valid_order():
-            print(f"{self.order.title()}: ${self.drink_cost:.2f}")
             payment = process_coins()
             transaction = TransactionHandler(payment, self.drink_cost)
             if transaction.execute():
@@ -90,6 +89,6 @@ class OrderDirector:
             and ResourceValidator(self.drink_ingredients).validate()
         )
 
-    @DecoratorType.PRINT_IN_YELLOW.value
+    @DecoratorType.PRINT_IN_YELLOW()
     def fetch_order_info(self):
         return f"{self.order.title()}: ${self.drink_cost:.2f}"

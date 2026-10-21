@@ -2,12 +2,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from .order_data import Ingredients
-from .style import decorator
-from .style.rich_colors import RichColors
-
-task_decorator = decorator.ColorizedIndentPrinter(
-    style=RichColors.YELLOW, indent=1
-)
+from .style.decorator_type import DecoratorType
 
 
 @dataclass(slots=True)
@@ -36,7 +31,7 @@ class Resources(Mapping[str, int]):
     def __len__(self):
         return len(self.__dataclass_fields__)
 
-    @task_decorator
+    @DecoratorType.PRINT_IN_YELLOW()
     def get_info(self, key: str) -> str:
         unit = Ingredients.get_units(key)
         return f"{key.title()}: {getattr(self, key)}{unit}"
@@ -56,10 +51,10 @@ class ResourceValidator:
     def validate(self) -> bool:
         for item, amount in self.order_ingredients.items():
             if amount > RESOURCES[item]:
-                self.error_response(item)
+                self.on_error(item)
                 return False
         return True
 
-    @task_decorator
-    def error_response(self, item):
+    @DecoratorType.PRINT_IN_YELLOW()
+    def on_error(self, item):
         return f"Sorry, there is not enough {item}."

@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 from dataclasses import dataclass
 
-from rich.console import Console
-
 from .exception.decorator.abort_decorator import AbortDecorator
 from .order_data import DrinkType, ItemSpecs
 from .orders import OrderDirector
+from .prompt import get_prompt
 from .resources import RESOURCES
-from .style import decorator
 from .style.decorator_type import DecoratorType
-from .style.rich_colors import RichColors
 
 
 @dataclass()
@@ -29,26 +26,38 @@ STATUS = Status(is_on=True, profit=0.0)
 @AbortDecorator()
 def coffee_machine() -> None:
     """Main function to run the coffee machine."""
-    console = Console()
     while STATUS.is_on:
-        user_choice = console.input(user_input())
-        options = {
-            "quit": turn_off,
-            "report": get_report,
-        }
-        if handler := options.get(user_choice):
-            handler()
-            continue
-        if user_choice in MENU:
-            process_drink_order(user_choice)
+        user_choice = get_prompt(user_input(), str)
+        if MENU.get(user_choice) is None:
+            on_invalid_option()
+        else:
+            drink_info(user_choice)
+            options = {
+                "quit": turn_off,
+                "report": get_report,
+            }
+            if handler := options.get(user_choice):
+                handler()
+                continue
+            if user_choice in MENU:
+                process_drink_order(user_choice)
 
 
-@decorator.Colorizer(style=RichColors.BOLD_GREEN)
+def drink_info(user_choice: str) -> None:
+    DrinkType[user_choice.upper()].item_info()
+
+
+@DecoratorType.PRINT_IN_RED()
+def on_invalid_option() -> str:
+    return "Please select a valid option."
+
+
+@DecoratorType.COLORIZE_IN_GREEN()
 def user_input():
     return f"What would you like? ({'/'.join(MENU_ITEMS)}): "
 
 
-@DecoratorType.PRINT_TITLE.value
+@DecoratorType.FIGLETIZE_TITLE()
 def get_title():
     return "JavaGenie"
 
@@ -59,13 +68,13 @@ def process_drink_order(user_choice: str):
     STATUS.profit += order_director.profit
 
 
-@DecoratorType.PRINT_IN_YELLOW.value
+@DecoratorType.PRINT_IN_YELLOW()
 def get_report():
     RESOURCES.get_all_info()
     return f"Money: ${STATUS.profit:.2f}"
 
 
-@DecoratorType.PRINT_IN_YELLOW.value
+@DecoratorType.PRINT_IN_YELLOW()
 def turn_off():
     STATUS.is_on = False
     return "Thank you!"

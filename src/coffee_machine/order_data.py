@@ -2,6 +2,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
 
+from .style.decorator_type import DecoratorType
+
 
 @dataclass(frozen=True, slots=True)
 class Ingredients(Mapping[str, int]):
@@ -48,6 +50,10 @@ class DrinkType(Enum):
     @classmethod
     def as_dict(cls):
         return {member.name.lower(): member.value for member in cls}
+
+    @DecoratorType.PRINT_IN_WHITE()
+    def item_info(self) -> str:
+        return f"{self.name.title()}:  ${self.value.cost.amount:.2f}"
 
 
 MENU: dict[str, ItemSpecs] = DrinkType.as_dict()
