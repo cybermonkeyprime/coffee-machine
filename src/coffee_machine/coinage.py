@@ -2,15 +2,7 @@ from enum import Enum
 
 from rich.console import Console
 
-from .style import decorator
-from .style.rich_colors import RichColors
-
-task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.YELLOW, indent=1, use_output=False
-)
-print_task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.BOLD_GREEN, indent=1, use_output=True, end="\n\n"
-)
+from .style.decorator_type import DecoratorType
 
 
 class CoinageType(Enum):
@@ -24,7 +16,7 @@ class CoinageType(Enum):
     def valid_items(cls):
         return tuple(member.name for member in cls)
 
-    @task_decorator
+    @DecoratorType.INPUT_IN_YELLOW.value
     def get_input_request(self):
         return f"How many {self.name.title()}? "
 
@@ -41,16 +33,17 @@ def process_coins() -> float:
     """Returns the total calculated for coins inserted."""
     output_coinage_request()
     total = sum(CoinageType.insert_coins())
+    print()  # add newline
     if total > 0:
         output_total(total)
     return total
 
 
-@print_task_decorator
+@DecoratorType.PRINT_IN_GREEN.value
 def output_coinage_request() -> str:
     return "Please insert coins."
 
 
-@print_task_decorator
+@DecoratorType.PRINT_IN_GREEN.value
 def output_total(total: float) -> str:
     return f"You inserted ${total:.2f}"

@@ -1,11 +1,6 @@
 from dataclasses import dataclass
 
-from .style import decorator
-from .style.rich_colors import RichColors
-
-task_decorator = decorator.StylizedIndentPrinter(
-    style=RichColors.YELLOW, indent=1, use_output=True, end="\n"
-)
+from .style.decorator_type import DecoratorType
 
 
 @dataclass(slots=True)
@@ -29,13 +24,13 @@ class TransactionHandler:
     def calculate_change(self) -> float:
         return round(self.money_received - self.item_cost, 2)
 
-    @task_decorator
+    @DecoratorType.PRINT_IN_GREEN.value
     def has_change_message(self, change: float):
         return f"Your change is ${change:.2f}\n"
 
     def transaction_failure(self):
         return self.money_received < self.item_cost
 
-    @task_decorator
+    @DecoratorType.PRINT_PADDED_RED.value
     def transaction_failure_message(self) -> str:
         return "Sorry! That's not enough money. Money refunded."

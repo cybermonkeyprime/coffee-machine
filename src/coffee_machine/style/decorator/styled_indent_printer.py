@@ -31,7 +31,9 @@ class StylizedIndentPrinter(GenericDecorator):
         decorated_func = Colorizer(style=self.style)(decorated_func)
 
         if self.use_output:
-            decorated_func = OutputPrinter(suffix=self.end)(decorated_func)
+            decorated_func = OutputPrinter(prefix=self.begin, suffix=self.end)(
+                decorated_func
+            )
 
         return wraps(func)(decorated_func)
 
