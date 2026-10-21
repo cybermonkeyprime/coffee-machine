@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 
 from .prompt import get_prompt
@@ -11,9 +12,23 @@ class CoinageType(Enum):
     QUARTERS = 0.25
     DOLLARS = 1.00
 
+    @property
+    def coinage(self):
+        return CoinageInvocation(name=self.name, value=self.value)
+
     @classmethod
     def valid_items(cls):
         return tuple(member.name for member in cls)
+
+    @classmethod
+    def insert_coins(cls) -> tuple:
+        return tuple(member.coinage.request_amount() for member in cls)
+
+
+@dataclass(frozen=True, slots=True)
+class CoinageInvocation:
+    name: str
+    value: float
 
     @DecoratorType.INPUT_IN_YELLOW()
     def get_input_request(self):
@@ -22,10 +37,6 @@ class CoinageType(Enum):
     def request_amount(self):
         count = get_prompt(self.get_input_request(), int)
         return count * self.value
-
-    @classmethod
-    def insert_coins(cls) -> tuple:
-        return tuple(member.request_amount() for member in cls)
 
 
 @DecoratorType.PRINT_IN_RED()
