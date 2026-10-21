@@ -13,11 +13,12 @@ class TransactionHandler:
         if self.money_received < self.item_cost:
             self.transaction_failure_message()
             return False
+        print()
         self.has_change()
         return True
 
     def has_change(self):
-        if change := self.calculate_change() > 0:
+        if (change := self.calculate_change()) > 0:
             self.has_change_message(change)
 
     def calculate_change(self) -> float:
