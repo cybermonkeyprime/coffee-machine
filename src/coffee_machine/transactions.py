@@ -17,8 +17,7 @@ class TransactionHandler:
         return True
 
     def has_change(self):
-        change = self.calculate_change()
-        if change > 0:
+        if change := self.calculate_change() > 0:
             self.has_change_message(change)
 
     def calculate_change(self) -> float:
