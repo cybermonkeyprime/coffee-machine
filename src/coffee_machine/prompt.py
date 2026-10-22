@@ -23,13 +23,14 @@ def get_prompt(message: str, target_type: type[int] | type[str]) -> int | str:
             return 0 if target_type is int else ""
 
         if target_type is int:
-            if user_input.isdigit():
-                return int(user_input)
+            return int(user_input)
+
             invalid_response(int)
 
-        elif target_type is str:
+        if target_type is str:
             if user_input.isalpha():
                 return user_input
+
             invalid_response(str)
 
 

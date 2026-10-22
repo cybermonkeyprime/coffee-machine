@@ -14,7 +14,7 @@ class CoinageType(Enum):
 
     @property
     def coinage(self):
-        return CoinageInvocation(name=self.name, value=self.value)
+        return CoinageRenderer(name=self.name, value=self.value)
 
     @classmethod
     def valid_items(cls):
@@ -26,7 +26,7 @@ class CoinageType(Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class CoinageInvocation:
+class CoinageRenderer:
     name: str
     value: float
 
