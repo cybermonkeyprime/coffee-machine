@@ -19,7 +19,6 @@ MENU: dict[str, ItemSpecs] = DrinkType.as_dict()
 
 MENU_ITEMS = tuple(drink_name for drink_name in MENU)
 
-
 STATUS = Status(is_on=True, profit=0.0)
 
 
@@ -27,20 +26,21 @@ STATUS = Status(is_on=True, profit=0.0)
 def coffee_machine() -> None:
     """Main function to run the coffee machine."""
     while STATUS.is_on:
-        user_choice = get_prompt(user_input(), str)
-        if MENU.get(user_choice) is None:
+        user_choice = get_prompt(request_order(), str)
+        options = {
+            "quit": turn_off,
+            "report": get_report,
+        }
+        if handler := options.get(user_choice):
+            handler()
+            continue
+
+        if user_choice not in MENU:
             on_invalid_option()
-        else:
+
+        if user_choice in MENU:
             drink_info(user_choice)
-            options = {
-                "quit": turn_off,
-                "report": get_report,
-            }
-            if handler := options.get(user_choice):
-                handler()
-                continue
-            if user_choice in MENU:
-                process_drink_order(user_choice)
+            process_drink_order(user_choice)
 
 
 def drink_info(user_choice: str) -> None:
@@ -53,7 +53,7 @@ def on_invalid_option() -> str:
 
 
 @DecoratorType.COLORIZE_IN_GREEN()
-def user_input():
+def request_order():
     return f"What would you like? ({'/'.join(MENU_ITEMS)}): "
 
 

@@ -39,11 +39,6 @@ class CoinageInvocation:
         return count * self.value
 
 
-@DecoratorType.PRINT_IN_RED()
-def invalid_int_response() -> str:
-    return "Invalid input! Please enter a whole number."
-
-
 def process_coins() -> float:
     """Returns the total calculated for coins inserted."""
     output_coinage_request()

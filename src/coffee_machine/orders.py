@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from .coinage import process_coins
-from .order_data import MENU, DrinkType, Ingredients, ItemSpecs
+from .order_data import MENU, Ingredients, ItemSpecs
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
 from .transactions import TransactionHandler
