@@ -32,13 +32,13 @@ class Resources(Mapping[str, int]):
         return len(self.__dataclass_fields__)
 
     @DecoratorType.PRINT_IN_YELLOW()
-    def get_info(self, key: str) -> str:
+    def get_resource_info(self, key: str) -> str:
         unit = Ingredients.get_units(key)
         return f"{key.title()}: {getattr(self, key)}{unit}"
 
     def get_all_info(self):
         for key in self:
-            self.get_info(key)
+            self.get_resource_info(key)
 
 
 RESOURCES = Resources(water=300, milk=200, coffee=100)
@@ -46,15 +46,15 @@ RESOURCES = Resources(water=300, milk=200, coffee=100)
 
 @dataclass(frozen=True, slots=True)
 class ResourceValidator:
-    order_ingredients: Ingredients
+    resource: Ingredients
 
     def validate(self) -> bool:
-        for item, amount in self.order_ingredients.items():
+        for item, amount in self.resource.items():
             if amount > RESOURCES[item]:
-                self.on_error(item)
+                self.on_resource_error(item)
                 return False
         return True
 
     @DecoratorType.PRINT_IN_YELLOW()
-    def on_error(self, item):
+    def on_resource_error(self, item):
         return f"Sorry, there is not enough {item}."
