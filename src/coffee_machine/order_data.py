@@ -32,19 +32,19 @@ class Ingredients(Mapping[str, int]):
 @dataclass(frozen=True, slots=True)
 class ItemSpecs:
     ingredients: Ingredients
-    cost: Cost
+    price: Price
 
 
 @dataclass(frozen=True, slots=True)
-class Cost:
+class Price:
     amount: float
 
 
 class DrinkType(Enum):
-    ESPRESSO = ItemSpecs(Ingredients(water=50, coffee=18), Cost(1.5))
-    LATTE = ItemSpecs(Ingredients(water=200, milk=150, coffee=24), Cost(2.5))
+    ESPRESSO = ItemSpecs(Ingredients(water=50, coffee=18), Price(1.5))
+    LATTE = ItemSpecs(Ingredients(water=200, milk=150, coffee=24), Price(2.5))
     CAPPUCCINO = ItemSpecs(
-        Ingredients(water=250, milk=100, coffee=24), Cost(3.0)
+        Ingredients(water=250, milk=100, coffee=24), Price(3.0)
     )
 
     @classmethod
@@ -53,7 +53,7 @@ class DrinkType(Enum):
 
     @DecoratorType.PRINT_IN_WHITE()
     def item_info(self) -> str:
-        return f"{self.name.title()}:  ${self.value.cost.amount:.2f}"
+        return f"{self.name.title()}:  ${self.value.price.amount:.2f}"
 
 
 MENU: dict[str, ItemSpecs] = DrinkType.as_dict()
