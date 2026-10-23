@@ -12,7 +12,7 @@ class OrderMaker:
     order: str
 
     @property
-    def order_ingredients(self) -> Ingredients:
+    def ingredients(self) -> Ingredients:
         return MENU[self.order].ingredients
 
     def execute(self):
@@ -22,13 +22,13 @@ class OrderMaker:
 
     def deduct_ingredients(self) -> None:
         """Deduct the required ingredients from the resources."""
-        for item, amount in self.order_ingredients.items():
+        for item, amount in self.ingredients.items():
             RESOURCES[item] -= amount
 
     @DecoratorType.PRINT_IN_YELLOW()
     def add_ingredient(self, ingredient: str):
         unit = Ingredients.get_units(ingredient)
-        return f"Adding {self.order_ingredients[ingredient]}{unit} of {ingredient}"
+        return f"Adding {self.ingredients[ingredient]}{unit} of {ingredient}"
 
     def order_prep(self):
         tasks = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
@@ -41,7 +41,7 @@ class OrderMaker:
         return "Preparing your order ..."
 
     def add_ingredients(self) -> None:
-        for ingredient in self.order_ingredients:
+        for ingredient in self.ingredients:
             self.add_ingredient(ingredient)
         print()
 
@@ -73,7 +73,7 @@ class OrderDirector:
 
     @property
     def drink_cost(self):
-        return self.drink_info.cost.amount
+        return self.drink_info.price.amount
 
     def process_order(self):
         if self.is_valid_order():
