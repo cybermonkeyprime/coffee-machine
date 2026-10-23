@@ -46,10 +46,10 @@ RESOURCES = Resources(water=300, milk=200, coffee=100)
 
 @dataclass(frozen=True, slots=True)
 class ResourceValidator:
-    resource: Ingredients
+    ingredients: Ingredients
 
     def validate(self) -> bool:
-        for item, amount in self.resource.items():
+        for item, amount in self.ingredients.items():
             if amount > RESOURCES[item]:
                 self.on_resource_error(item)
                 return False
