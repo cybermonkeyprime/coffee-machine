@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from .prompt import get_prompt
-from .style.decorator_type import DecoratorType
+from ..prompt import get_prompt
+from ..style.decorator_type import DecoratorType
 
 
 class CoinageType(Enum):

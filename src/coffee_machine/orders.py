@@ -1,36 +1,40 @@
 from dataclasses import dataclass
 
-from .coinage import process_coins
-from .order_data import MENU, Ingredients, ItemSpecs
+from .drinks import ItemSpecs
+from .ingredients import Ingredients
+from .menu import MENU
+from .money.coinage import process_coins
+from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
-from .transactions import TransactionHandler
 
 
 @dataclass(frozen=True, slots=False)
 class OrderMaker:
-    order: str
+    item_name: str
 
     @property
-    def ingredients(self) -> Ingredients:
-        return MENU[self.order].ingredients
+    def item_ingredients(self) -> Ingredients:
+        return MENU[self.item_name].ingredients
 
     def deduct_ingredients(self) -> None:
         """Deduct the required ingredients from the resources."""
-        for item, amount in self.ingredients.items():
+        for item, amount in self.item_ingredients.items():
             RESOURCES[item] -= amount
 
     @DecoratorType.PRINT_IN_YELLOW()
     def add_ingredient(self, ingredient: str):
         unit = Ingredients.get_units(ingredient)
-        return f"Adding {self.ingredients[ingredient]}{unit} of {ingredient}"
+        return (
+            f"Adding {self.item_ingredients[ingredient]}{unit} of {ingredient}"
+        )
 
     @DecoratorType.PRINT_PADDED_YELLOW()
     def prep_msg(self):
         return "Preparing your order ..."
 
     def add_ingredients(self) -> None:
-        for ingredient in self.ingredients:
+        for ingredient in self.item_ingredients:
             self.add_ingredient(ingredient)
         print()
 
@@ -44,7 +48,7 @@ class OrderMaker:
 
     @DecoratorType.PRINT_IN_YELLOW()
     def give_order(self) -> str:
-        return f"Here is your {self.order.title()}☕"
+        return f"Here is your {self.item_name.title()}☕"
 
     def order_prep(self):
         tasks = ("prep_msg", "add_ingredients", "blend_order", "heat_order")

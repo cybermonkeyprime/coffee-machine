@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .style.decorator_type import DecoratorType
+from ..style.decorator_type import DecoratorType
 
 
 @dataclass(slots=True)

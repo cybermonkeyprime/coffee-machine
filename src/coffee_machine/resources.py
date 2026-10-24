@@ -1,7 +1,7 @@
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from .order_data import Ingredients
+from .ingredients import Ingredients
 from .style.decorator_type import DecoratorType
 
 

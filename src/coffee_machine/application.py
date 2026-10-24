@@ -2,8 +2,9 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from .drinks import DrinkType
 from .exception.decorator.abort_decorator import AbortDecorator
-from .order_data import DrinkType, ItemSpecs
+from .menu import MENU, MENU_ITEMS
 from .orders import OrderDirector
 from .prompt import get_prompt
 from .resources import RESOURCES
@@ -15,10 +16,6 @@ class Status:
     is_on: bool
     profit: float
 
-
-MENU: dict[str, ItemSpecs] = DrinkType.as_dict()
-
-MENU_ITEMS = tuple(drink_name for drink_name in MENU)
 
 STATUS = Status(is_on=True, profit=0.0)
 
