@@ -14,19 +14,29 @@ class CoinageType(Enum):
 
     @property
     def coinage(self):
-        return CoinageRenderer(name=self.name, value=self.value)
+        return CoinageCollector(name=self.name, value=self.value)
 
     @classmethod
     def valid_items(cls):
         return tuple(member.name for member in cls)
 
     @classmethod
+    @DecoratorType.PRINT_IN_GREEN()
+    def coinage_request(cls) -> str:
+        return "Please insert coins."
+
+    @classmethod
     def insert_coins(cls) -> tuple:
+        cls.coinage_request()
         return tuple(member.coinage.request_amount() for member in cls)
+
+    @classmethod
+    def get_total_coinage(cls) -> int:
+        return sum(cls.insert_coins())
 
 
 @dataclass(frozen=True, slots=True)
-class CoinageRenderer:
+class CoinageCollector:
     name: str
     value: float
 
@@ -41,16 +51,5 @@ class CoinageRenderer:
 
 def process_coins() -> float:
     """Returns the total calculated for coins inserted."""
-    output_coinage_request()
-    sub_total = sum(CoinageType.insert_coins())
+    sub_total = CoinageType.get_total_coinage()
     return 0 if sub_total < 0 else sub_total
-
-
-@DecoratorType.PRINT_IN_GREEN()
-def output_coinage_request() -> str:
-    return "Please insert coins."
-
-
-@DecoratorType.PRINT_IN_GREEN()
-def output_total(total: float) -> str:
-    return f"You inserted ${total:.2f}"

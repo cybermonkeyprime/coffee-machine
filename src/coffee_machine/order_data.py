@@ -1,8 +1,13 @@
 from collections.abc import Mapping
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 
 from .style.decorator_type import DecoratorType
+
+
+class UnitType(StrEnum):
+    LIQUID = "ml"
+    SOLID = "g"
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,7 +31,7 @@ class Ingredients(Mapping[str, int]):
 
     @classmethod
     def get_units(cls, key):
-        return "g" if key == "coffee" else "ml"
+        return UnitType.SOLID if key == "coffee" else UnitType.LIQUID
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,9 +56,11 @@ class DrinkType(Enum):
     def as_dict(cls):
         return {member.name.lower(): member.value for member in cls}
 
+    @classmethod
     @DecoratorType.PRINT_IN_WHITE()
-    def item_info(self) -> str:
-        return f"{self.name.title()}:  ${self.value.price.amount:.2f}"
+    def item_info(cls, name: str) -> str:
+        member = cls[name.upper()]
+        return f"{member.name.title()}:  ${member.value.price.amount:.2f}"
 
 
 MENU: dict[str, ItemSpecs] = DrinkType.as_dict()

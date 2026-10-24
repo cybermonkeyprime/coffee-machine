@@ -73,7 +73,7 @@ def coffee_machine() -> None:
             on_invalid_option()
 
         if user_choice in MENU:
-            DrinkType[user_choice.upper()].item_info()
+            DrinkType.item_info(user_choice)
             process_drink_order(user_choice)
 
 
