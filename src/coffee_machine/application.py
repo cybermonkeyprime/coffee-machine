@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from .exception.decorator.abort_decorator import AbortDecorator
@@ -20,31 +21,6 @@ MENU: dict[str, ItemSpecs] = DrinkType.as_dict()
 MENU_ITEMS = tuple(drink_name for drink_name in MENU)
 
 STATUS = Status(is_on=True, profit=0.0)
-
-
-@AbortDecorator()
-def coffee_machine() -> None:
-    """Main function to run the coffee machine."""
-    while STATUS.is_on:
-        user_choice = get_prompt(request_order(), str)
-        options = {
-            "quit": turn_off,
-            "report": get_report,
-        }
-        if handler := options.get(user_choice):
-            handler()
-            continue
-
-        if user_choice not in MENU:
-            on_invalid_option()
-
-        if user_choice in MENU:
-            drink_info(user_choice)
-            process_drink_order(user_choice)
-
-
-def drink_info(user_choice: str) -> None:
-    DrinkType[user_choice.upper()].item_info()
 
 
 @DecoratorType.PRINT_IN_RED()
@@ -80,9 +56,32 @@ def turn_off():
     return "Thank you!"
 
 
+@AbortDecorator()
+def coffee_machine() -> None:
+    """Main function to run the coffee machine."""
+    while STATUS.is_on:
+        user_choice = get_prompt(request_order(), str)
+        options = {
+            "quit": turn_off,
+            "report": get_report,
+        }
+        if handler := options.get(user_choice):
+            handler()
+            continue
+
+        if user_choice not in MENU:
+            on_invalid_option()
+
+        if user_choice in MENU:
+            DrinkType[user_choice.upper()].item_info()
+            process_drink_order(user_choice)
+
+
 def run():
-    get_title()
-    coffee_machine()
+    functions: tuple[Callable, ...] = (get_title, coffee_machine)
+    for function in functions:
+        if callable(function):
+            function()
 
 
 if __name__ == "__main__":
