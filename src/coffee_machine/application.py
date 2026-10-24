@@ -9,6 +9,7 @@ from .orders import OrderDirector
 from .prompt import get_prompt
 from .resources import RESOURCES
 from .style.decorator_type import DecoratorType
+from .versioning.version_config import SoftwareVersion
 
 
 @dataclass(slots=True)
@@ -32,7 +33,7 @@ def request_order():
 
 @DecoratorType.FIGLETIZE_TITLE()
 def get_title():
-    return "JavaGenie"
+    return SoftwareVersion.TITLE.value
 
 
 def process_drink_order(user_choice: str):
@@ -75,7 +76,11 @@ def coffee_machine() -> None:
 
 
 def run():
-    functions: tuple[Callable, ...] = (get_title, coffee_machine)
+    functions: tuple[Callable, ...] = (
+        SoftwareVersion.header,
+        coffee_machine,
+    )
+
     for function in functions:
         if callable(function):
             function()
