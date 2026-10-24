@@ -15,11 +15,6 @@ class OrderMaker:
     def ingredients(self) -> Ingredients:
         return MENU[self.order].ingredients
 
-    def execute(self):
-        tasks = ("deduct_ingredients", "order_prep", "give_order")
-        for task in tasks:
-            getattr(self, task)()
-
     def deduct_ingredients(self) -> None:
         """Deduct the required ingredients from the resources."""
         for item, amount in self.ingredients.items():
@@ -29,12 +24,6 @@ class OrderMaker:
     def add_ingredient(self, ingredient: str):
         unit = Ingredients.get_units(ingredient)
         return f"Adding {self.ingredients[ingredient]}{unit} of {ingredient}"
-
-    def order_prep(self):
-        tasks = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
-        for task in tasks:
-            callback = getattr(self, task)
-            callback()
 
     @DecoratorType.PRINT_PADDED_YELLOW()
     def prep_msg(self):
@@ -56,6 +45,17 @@ class OrderMaker:
     @DecoratorType.PRINT_IN_YELLOW()
     def give_order(self) -> str:
         return f"Here is your {self.order.title()}☕"
+
+    def order_prep(self):
+        tasks = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
+        for task in tasks:
+            callback = getattr(self, task)
+            callback()
+
+    def execute(self):
+        tasks = ("deduct_ingredients", "order_prep", "give_order")
+        for task in tasks:
+            getattr(self, task)()
 
 
 @dataclass(slots=True)
