@@ -11,7 +11,7 @@ from .resources import RESOURCES
 from .style.decorator_type import DecoratorType
 
 
-@dataclass()
+@dataclass(slots=True)
 class Status:
     is_on: bool
     profit: float
@@ -56,12 +56,12 @@ def turn_off():
 @AbortDecorator()
 def coffee_machine() -> None:
     """Main function to run the coffee machine."""
+    options = {
+        "quit": turn_off,
+        "report": get_report,
+    }
     while STATUS.is_on:
         user_choice = get_prompt(request_order(), str)
-        options = {
-            "quit": turn_off,
-            "report": get_report,
-        }
         if handler := options.get(user_choice):
             handler()
             continue
