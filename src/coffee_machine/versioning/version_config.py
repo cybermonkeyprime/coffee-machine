@@ -1,4 +1,3 @@
-# src/ota_installer/handler/version_handler.py
 from enum import Enum
 
 from ..style.decorator_type import DecoratorType
@@ -20,6 +19,3 @@ class SoftwareVersion(Enum):
     @DecoratorType.FIGLETIZE_TITLE()
     def header(cls):
         return cls.TITLE.value
-
-
-# Signed off by Brian Sanford on 20260917

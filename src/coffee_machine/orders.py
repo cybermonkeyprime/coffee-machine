@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .drinks import ItemSpecs
 from .ingredients import Ingredients
 from .menu import MENU
-from .money.coinage import process_coins
+from .money.coinage import CoinType
 from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
@@ -50,16 +50,18 @@ class OrderMaker:
     def give_order(self) -> str:
         return f"Here is your {self.item_name.title()}☕"
 
-    def order_prep(self):
-        tasks = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
-        for task in tasks:
-            callback = getattr(self, task)
-            callback()
+    def preparation(self):
+        steps = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
+        self.order_pipeline(steps)
 
     def execute(self):
-        tasks = ("deduct_ingredients", "order_prep", "give_order")
-        for task in tasks:
-            getattr(self, task)()
+        steps = ("deduct_ingredients", "preparation", "give_order")
+        self.order_pipeline(steps)
+
+    def order_pipeline(self, steps: tuple):
+        for step in steps:
+            callback = getattr(self, step)
+            callback()
 
 
 @dataclass(slots=True)
@@ -80,12 +82,18 @@ class OrderDirector:
         return self.drink_info.price.amount
 
     def process_order(self):
-        if self.is_valid_order():
-            payment = process_coins()
-            transaction = TransactionHandler(payment, self.drink_cost)
-            if transaction.execute():
-                self.profit += self.drink_cost
-                OrderMaker(self.order).execute()
+        if not self.is_valid_order():
+            return
+
+        if not self.execute_transaction(CoinType.get_total_coinage()):
+            return
+
+        self.profit += self.drink_cost
+
+        OrderMaker(self.order).execute()
+
+    def execute_transaction(self, payment: float) -> bool:
+        return TransactionHandler(payment, self.drink_cost).execute()
 
     def is_valid_order(self):
         return (

@@ -5,7 +5,7 @@ from ..prompt import get_prompt
 from ..style.decorator_type import DecoratorType
 
 
-class CoinageType(Enum):
+class CoinType(Enum):
     PENNIES = 0.01
     NICKELS = 0.05
     DIMES = 0.10
@@ -13,30 +13,26 @@ class CoinageType(Enum):
     DOLLARS = 1.00
 
     @property
-    def coinage(self):
-        return CoinageCollector(name=self.name, value=self.value)
+    def denomination(self):
+        return Denomination(name=self.name, value=self.value)
 
     @classmethod
     def valid_items(cls):
         return tuple(member.name for member in cls)
 
     @classmethod
-    @DecoratorType.PRINT_IN_GREEN()
-    def coinage_request(cls) -> str:
-        return "Please insert coins."
-
-    @classmethod
     def insert_coins(cls) -> tuple:
-        cls.coinage_request()
-        return tuple(member.coinage.request_amount() for member in cls)
+        request_coinage()
+        return tuple(member.denomination.request_amount() for member in cls)
 
     @classmethod
     def get_total_coinage(cls) -> int:
-        return sum(cls.insert_coins())
+        total = sum(cls.insert_coins())
+        return 0 if total < 0 else total
 
 
 @dataclass(frozen=True, slots=True)
-class CoinageCollector:
+class Denomination:
     name: str
     value: float
 
@@ -49,7 +45,14 @@ class CoinageCollector:
         return count * self.value
 
 
-def process_coins() -> float:
-    """Returns the total calculated for coins inserted."""
-    sub_total = CoinageType.get_total_coinage()
-    return 0 if sub_total < 0 else sub_total
+@DecoratorType.PRINT_IN_GREEN()
+def request_coinage() -> str:
+    return "Please insert coins."
+
+
+def main():
+    pass
+
+
+if __name__ == "__main__":
+    main()
