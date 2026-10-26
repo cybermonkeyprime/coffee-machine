@@ -85,15 +85,17 @@ class OrderDirector:
         if not self.is_valid_order():
             return
 
-        if not self.execute_transaction(CoinType.get_total_coinage()):
+        if not self.execute_transaction():
             return
 
         self.profit += self.drink_cost
 
         OrderMaker(self.order).execute()
 
-    def execute_transaction(self, payment: float) -> bool:
-        return TransactionHandler(payment, self.drink_cost).execute()
+    def execute_transaction(self) -> bool:
+        return TransactionHandler(
+            CoinType.get_total_coinage(), self.drink_cost
+        ).execute()
 
     def is_valid_order(self):
         return (
