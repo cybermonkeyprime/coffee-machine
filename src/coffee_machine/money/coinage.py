@@ -1,48 +1,57 @@
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum, auto
 
 from ..prompt import get_prompt
 from ..style.decorator_type import DecoratorType
 
 
-class CoinType(Enum):
-    PENNIES = 0.01
-    NICKELS = 0.05
-    DIMES = 0.10
-    QUARTERS = 0.25
-    DOLLARS = 1.00
-
-    @property
-    def denomination(self):
-        return Denomination(name=self.name, value=self.value)
-
-    @classmethod
-    def valid_items(cls):
-        return tuple(member.name for member in cls)
-
-    @classmethod
-    def insert_coins(cls) -> tuple:
-        request_coinage()
-        return tuple(member.denomination.request_amount() for member in cls)
-
-    @classmethod
-    def get_total_coinage(cls) -> int:
-        total = sum(cls.insert_coins())
-        return 0 if total < 0 else total
+class CoinType(StrEnum):
+    PENNIES = auto()
+    NICKELS = auto()
+    DIMES = auto()
+    QUARTERS = auto()
+    DOLLARS = auto()
 
 
 @dataclass(frozen=True, slots=True)
 class Denomination:
-    name: str
+    coin_type: CoinType
     value: float
 
     @DecoratorType.INPUT_IN_YELLOW()
     def get_input_request(self):
-        return f"How many {self.name.title()}? "
+        return f"How many {self.coin_type.title()}? "
 
-    def request_amount(self):
-        count = get_prompt(self.get_input_request(), int)
-        return count * self.value
+    def request_coin_type(self):
+        quantity = get_prompt(self.get_input_request(), int)
+        return CoinCount(COIN_CONFIG[self.coin_type], quantity).total_value
+
+
+COIN_CONFIG = {
+    CoinType.PENNIES: Denomination(CoinType.PENNIES, 0.01),
+    CoinType.NICKELS: Denomination(CoinType.NICKELS, 0.05),
+    CoinType.DIMES: Denomination(CoinType.DIMES, 0.10),
+    CoinType.QUARTERS: Denomination(CoinType.QUARTERS, 0.25),
+    CoinType.DOLLARS: Denomination(CoinType.DOLLARS, 1.00),
+}
+
+
+@dataclass(frozen=True, slots=True)
+class CoinCount:
+    denomination: Denomination
+    quantity: int
+
+    @property
+    def total_value(self) -> float:
+        return self.quantity * self.denomination.value
+
+
+def calculate_total_inserted() -> float:
+    total = sum(
+        denomination.request_coin_type()
+        for denomination in COIN_CONFIG.values()
+    )
+    return 0 if total < 0 else total
 
 
 @DecoratorType.PRINT_IN_GREEN()
@@ -51,7 +60,7 @@ def request_coinage() -> str:
 
 
 def main():
-    pass
+    calculate_total_inserted()
 
 
 if __name__ == "__main__":

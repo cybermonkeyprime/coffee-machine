@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .drinks import ItemSpecs
 from .ingredients import Ingredients
 from .menu import MENU
-from .money.coinage import CoinType
+from .money.coinage import calculate_total_inserted
 from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
@@ -93,9 +93,8 @@ class OrderDirector:
         OrderMaker(self.order).execute()
 
     def execute_transaction(self) -> bool:
-        return TransactionHandler(
-            CoinType.get_total_coinage(), self.drink_cost
-        ).execute()
+        money_received = calculate_total_inserted()
+        return TransactionHandler(money_received, self.drink_cost).execute()
 
     def is_valid_order(self):
         return (
