@@ -5,7 +5,7 @@ build-backend = "uv_build"
 [project]
 name = "coffee-machine"
 version = "2026.9.1"
-requires-python = ">=3.14"
+requires-python = ">=3.15"
 dependencies = [
   "dependency-injector==4.48.3",
   "loguru==0.7.3",
@@ -17,7 +17,7 @@ dependencies = [
 package-dir = { "" = "src" }
 
 [project.scripts]
-coffee-machine= "coffee_machine.main:main"
+coffee-machine = "coffee_machine.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -32,13 +32,13 @@ pythonVersion = "3.14"
 pythonPlatform = "Linux"
 defineConstant = { DEBUG = true }
 useLibraryCodeForTypes = true
-requires-python = ">=3.14"
+requires-python = ">=3.15"
 dependencies = []
 
 
 [tool.ruff]
 line-length = 79
-target-version = "py314"
+target-version = "py315"
 
 select = [
   "E",   # pycodestyle errors

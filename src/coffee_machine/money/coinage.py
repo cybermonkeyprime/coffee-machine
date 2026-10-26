@@ -27,13 +27,15 @@ class Denomination:
         return CoinCount(COIN_CONFIG[self.coin_type], quantity).total_value
 
 
-COIN_CONFIG = {
-    CoinType.PENNIES: Denomination(CoinType.PENNIES, 0.01),
-    CoinType.NICKELS: Denomination(CoinType.NICKELS, 0.05),
-    CoinType.DIMES: Denomination(CoinType.DIMES, 0.10),
-    CoinType.QUARTERS: Denomination(CoinType.QUARTERS, 0.25),
-    CoinType.DOLLARS: Denomination(CoinType.DOLLARS, 1.00),
-}
+COIN_CONFIG = frozendict(  # pyright: ignore[reportUndefinedVariable]
+    {
+        CoinType.PENNIES: Denomination(CoinType.PENNIES, 0.01),
+        CoinType.NICKELS: Denomination(CoinType.NICKELS, 0.05),
+        CoinType.DIMES: Denomination(CoinType.DIMES, 0.10),
+        CoinType.QUARTERS: Denomination(CoinType.QUARTERS, 0.25),
+        CoinType.DOLLARS: Denomination(CoinType.DOLLARS, 1.00),
+    }
+)
 
 
 @dataclass(frozen=True, slots=True)
