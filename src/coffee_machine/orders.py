@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-from .drinks import ItemSpecs
+from .drinks import DRINK_CONFIG, ItemSpecs
 from .ingredients import Ingredients
-from .menu import MENU
 from .money.coinage import calculate_total_inserted
 from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
@@ -15,7 +14,7 @@ class OrderMaker:
 
     @property
     def item_ingredients(self) -> Ingredients:
-        return MENU[self.item_name].ingredients
+        return DRINK_CONFIG[self.item_name].ingredients
 
     def deduct_ingredients(self) -> None:
         """Deduct the required ingredients from the resources."""
@@ -71,7 +70,7 @@ class OrderDirector:
 
     @property
     def drink_info(self) -> ItemSpecs:
-        return MENU[self.order]
+        return DRINK_CONFIG[self.order]
 
     @property
     def drink_ingredients(self):

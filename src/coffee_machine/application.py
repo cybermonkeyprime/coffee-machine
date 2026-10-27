@@ -2,9 +2,8 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .drinks import DrinkType
+from .drinks import DRINK_CONFIG
 from .exception.decorator.abort_decorator import AbortDecorator
-from .menu import MENU, MENU_ITEMS
 from .orders import OrderDirector
 from .prompt import get_prompt
 from .resources import RESOURCES
@@ -28,7 +27,7 @@ def on_invalid_option() -> str:
 
 @DecoratorType.COLORIZE_IN_GREEN()
 def request_order():
-    return f"What would you like? ({'/'.join(MENU_ITEMS)}): "
+    return f"What would you like? ({'/'.join(DRINK_CONFIG.keys())}): "
 
 
 @DecoratorType.FIGLETIZE_TITLE()
@@ -67,11 +66,11 @@ def coffee_machine() -> None:
             handler()
             continue
 
-        if user_choice not in MENU:
+        if user_choice not in DRINK_CONFIG:
             on_invalid_option()
 
-        if user_choice in MENU:
-            DrinkType.item_info(user_choice)
+        if user_choice in DRINK_CONFIG:
+            DRINK_CONFIG[user_choice].item_info()
             process_drink_order(user_choice)
 
 
