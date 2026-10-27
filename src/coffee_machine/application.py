@@ -11,13 +11,9 @@ from .style.decorator_type import DecoratorType
 from .versioning.version_config import SoftwareVersion
 
 
-@dataclass(slots=True)
-class Status:
-    is_on: bool
-    profit: float
-
-
-STATUS = Status(is_on=True, profit=0.0)
+@DecoratorType.FIGLETIZE_TITLE()
+def get_title():
+    return SoftwareVersion.TITLE.value
 
 
 @DecoratorType.PRINT_IN_RED()
@@ -30,15 +26,13 @@ def request_order():
     return f"What would you like? ({'/'.join(DRINK_CONFIG.keys())}): "
 
 
-@DecoratorType.FIGLETIZE_TITLE()
-def get_title():
-    return SoftwareVersion.TITLE.value
+@dataclass(slots=True)
+class Status:
+    is_on: bool
+    profit: float
 
 
-def process_drink_order(user_choice: str):
-    order_director = OrderDirector(user_choice)
-    order_director.process_order()
-    STATUS.profit += order_director.profit
+STATUS = Status(is_on=True, profit=0.0)
 
 
 @DecoratorType.PRINT_IN_YELLOW()
@@ -51,6 +45,12 @@ def get_report():
 def turn_off():
     STATUS.is_on = False
     return "Thank you!"
+
+
+def process_drink_order(user_choice: str):
+    order_director = OrderDirector(user_choice)
+    order_director.process_order()
+    STATUS.profit += order_director.profit
 
 
 @AbortDecorator()
