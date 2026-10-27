@@ -22,12 +22,12 @@ class Denomination:
     def get_input_request(self):
         return f"How many {self.coin_type.title()}? "
 
-    def request_coin_type(self):
+    def get_coin_type(self):
         quantity = get_prompt(self.get_input_request(), int)
         return CoinCount(COIN_CONFIG[self.coin_type], quantity).total_value
 
 
-COIN_CONFIG = frozendict(  # pyright: ignore[reportUndefinedVariable]
+COIN_CONFIG: dict[CoinType, Denomination] = frozendict(  # pyright: ignore[reportUndefinedVariable]
     {
         CoinType.PENNIES: Denomination(CoinType.PENNIES, 0.01),
         CoinType.NICKELS: Denomination(CoinType.NICKELS, 0.05),
@@ -50,8 +50,7 @@ class CoinCount:
 
 def calculate_total_inserted() -> float:
     total = sum(
-        denomination.request_coin_type()
-        for denomination in COIN_CONFIG.values()
+        denomination.get_coin_type() for denomination in COIN_CONFIG.values()
     )
     return 0 if total < 0 else total
 
