@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .drinks import DRINK_CONFIG, ItemSpecs
+from .drinks import DRINK_CONFIG, ItemSpec
 from .ingredients import Ingredients
 from .money.coinage import calculate_total_inserted
 from .money.transactions import TransactionHandler
@@ -69,7 +69,7 @@ class OrderDirector:
     profit: float = 0.0
 
     @property
-    def drink_info(self) -> ItemSpecs:
+    def drink_info(self) -> ItemSpec:
         return DRINK_CONFIG[self.order]
 
     @property

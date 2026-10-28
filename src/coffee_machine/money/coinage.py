@@ -1,41 +1,14 @@
 from dataclasses import dataclass
-from enum import StrEnum, auto
+from enum import Enum
 
 from ..prompt import get_prompt
 from ..style.decorator_type import DecoratorType
 
 
-class CoinType(StrEnum):
-    PENNIES = auto()
-    NICKELS = auto()
-    DIMES = auto()
-    QUARTERS = auto()
-    DOLLARS = auto()
-
-
 @dataclass(frozen=True, slots=True)
 class Denomination:
     coin_type: CoinType
-    value: float
-
-    @DecoratorType.INPUT_IN_YELLOW()
-    def get_input_request(self):
-        return f"How many {self.coin_type.title()}? "
-
-    def get_coin_type(self):
-        quantity = get_prompt(self.get_input_request(), int)
-        return CoinCount(COIN_CONFIG[self.coin_type], quantity).total_value
-
-
-COIN_CONFIG: dict[CoinType, Denomination] = frozendict(  # pyright: ignore[reportUndefinedVariable]
-    {
-        CoinType.PENNIES: Denomination(CoinType.PENNIES, 0.01),
-        CoinType.NICKELS: Denomination(CoinType.NICKELS, 0.05),
-        CoinType.DIMES: Denomination(CoinType.DIMES, 0.10),
-        CoinType.QUARTERS: Denomination(CoinType.QUARTERS, 0.25),
-        CoinType.DOLLARS: Denomination(CoinType.DOLLARS, 1.00),
-    }
-)
+    price: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,13 +18,39 @@ class CoinCount:
 
     @property
     def total_value(self) -> float:
-        return self.quantity * self.denomination.value
+        return self.quantity * self.denomination.price
+
+
+class CoinType(Enum):
+    PENNIES = 0.01
+    NICKELS = 0.05
+    DIMES = 0.10
+    QUARTERS = 0.25
+    DOLLARS = 1.00
+
+    @property
+    def denomination(self) -> Denomination:
+        return Denomination(self, self.value)
+
+    @DecoratorType.INPUT_IN_YELLOW()
+    def get_input_request(self) -> str:
+        return f"How many {self.name.title()}? "
+
+    def get_coin_quantity(self) -> int:
+        return get_prompt(self.get_input_request(), int)
+
+    def get_coin_type(self):
+        quantity = self.get_coin_quantity()
+        return CoinCount(self.denomination, quantity).total_value
+
+
+COIN_CONFIG: dict[CoinType, Denomination] = frozendict(  # pyright: ignore[reportUndefinedVariable]
+    {member.name.lower(): member.denomination for member in CoinType}
+)
 
 
 def calculate_total_inserted() -> float:
-    total = sum(
-        denomination.get_coin_type() for denomination in COIN_CONFIG.values()
-    )
+    total = sum(member.get_coin_type() for member in CoinType)
     return 0 if total < 0 else total
 
 

@@ -2,7 +2,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .drinks import DRINK_CONFIG
+from .drinks import DRINK_CONFIG, DrinkType
 from .exception.decorator.abort_decorator import AbortDecorator
 from .orders import OrderDirector
 from .prompt import get_prompt
@@ -70,7 +70,7 @@ def coffee_machine() -> None:
             on_invalid_option()
 
         if user_choice in DRINK_CONFIG:
-            DRINK_CONFIG[user_choice].item_info()
+            DrinkType[user_choice.upper()].item_price()
             process_drink_order(user_choice)
 
 

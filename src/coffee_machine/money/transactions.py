@@ -16,6 +16,7 @@ class TransactionHandler:
             transaction_failure_message()
             return False
         print()
+        get_cash_collected(self.money_received)
         self.has_change()
         return True
 
@@ -31,8 +32,13 @@ class TransactionHandler:
 
 
 @DecoratorType.PRINT_IN_GREEN()
+def get_cash_collected(change: float):
+    return f"Cash collected is ${change:.2f}"
+
+
+@DecoratorType.PRINT_IN_GREEN()
 def has_change_message(change: float):
-    return f"Your change is ${change:.2f}\n"
+    return f"Your Change is ${change:.2f}"
 
 
 @DecoratorType.PRINT_PADDED_RED()
