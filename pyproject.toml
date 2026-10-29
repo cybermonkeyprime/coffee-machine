@@ -35,6 +35,22 @@ useLibraryCodeForTypes = true
 requires-python = ">=3.15"
 dependencies = []
 
+[tool.pyrefly]
+# Type checking preset: 'off', 'basic', 'legacy', 'default', 'strict', or 'all'
+preset = "default"
+
+# Directories or files to include in the project
+project-includes = ["src"]
+
+# Directories or files to exclude
+project-excludes = ["tests", "build", "dist"]
+
+# Custom search paths for module resolution
+search-path = ["."]
+
+# Python version and platform targets
+python-version = "3.15"
+python-platform = "linux"
 
 [tool.ruff]
 line-length = 79

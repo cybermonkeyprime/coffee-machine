@@ -44,7 +44,7 @@ class CoinType(Enum):
         return CoinCount(self.denomination, quantity).total_value
 
 
-COIN_CONFIG: dict[CoinType, Denomination] = frozendict(  # pyright: ignore[reportUndefinedVariable]
+COIN_CONFIG: frozendict = frozendict(  # pyrefly: ignore[unknown-name] # pyright: ignore[reportUndefinedVariable]
     {member.name.lower(): member.denomination for member in CoinType}
 )
 

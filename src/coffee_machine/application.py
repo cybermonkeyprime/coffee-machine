@@ -12,7 +12,7 @@ from .versioning.version_config import SoftwareVersion
 
 
 @DecoratorType.FIGLETIZE_TITLE()
-def get_title():
+def get_title() -> str:
     return SoftwareVersion.TITLE.value
 
 
@@ -22,7 +22,7 @@ def on_invalid_option() -> str:
 
 
 @DecoratorType.COLORIZE_IN_GREEN()
-def request_order():
+def request_order() -> str:
     return f"What would you like? ({'/'.join(DRINK_CONFIG.keys())}): "
 
 
@@ -36,18 +36,18 @@ STATUS = Status(is_on=True, profit=0.0)
 
 
 @DecoratorType.PRINT_IN_YELLOW()
-def get_report():
+def get_report() -> str:
     RESOURCES.get_all_info()
     return f"Money: ${STATUS.profit:.2f}"
 
 
 @DecoratorType.PRINT_IN_YELLOW()
-def turn_off():
+def turn_off() -> str:
     STATUS.is_on = False
     return "Thank you!"
 
 
-def process_drink_order(user_choice: str):
+def process_drink_order(user_choice: str) -> None:
     order_director = OrderDirector(user_choice)
     order_director.process_order()
     STATUS.profit += order_director.profit
@@ -56,7 +56,7 @@ def process_drink_order(user_choice: str):
 @AbortDecorator()
 def coffee_machine() -> None:
     """Main function to run the coffee machine."""
-    options = {
+    options: dict[str, Callable] = {
         "quit": turn_off,
         "report": get_report,
     }
@@ -74,7 +74,7 @@ def coffee_machine() -> None:
             process_drink_order(user_choice)
 
 
-def run():
+def run() -> None:
     functions: tuple[Callable, ...] = (
         SoftwareVersion.header,
         coffee_machine,
