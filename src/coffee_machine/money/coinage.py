@@ -28,29 +28,28 @@ class CoinType(Enum):
     QUARTERS = 0.25
     DOLLARS = 1.00
 
-    @property
-    def denomination(self) -> Denomination:
-        return Denomination(self, self.value)
+    def get_denomination(self) -> Denomination:
+        return Denomination(coin_type=self, price=self.value)
 
     @DecoratorType.INPUT_IN_YELLOW()
     def get_input_request(self) -> str:
         return f"How many {self.name.title()}? "
 
     def get_coin_quantity(self) -> int:
-        return get_prompt(self.get_input_request(), int)
+        return get_prompt(message=self.get_input_request(), target_type=int)
 
     def get_coin_type(self):
         quantity = self.get_coin_quantity()
-        return CoinCount(self.denomination, quantity).total_value
+        return CoinCount(self.get_denomination(), quantity).total_value
 
 
-COIN_CONFIG: frozendict = frozendict(  # pyrefly: ignore[unknown-name] # pyright: ignore[reportUndefinedVariable]
-    {member.name.lower(): member.denomination for member in CoinType}
+COIN_CONFIG: frozendict[str, Denomination] = frozendict(  # pyrefly: ignore[unknown-name] # pyright: ignore[reportUndefinedVariable]
+    {member.name.lower(): member.get_denomination() for member in CoinType}  # pyrefly: ignore[bad-argument-count]
 )
 
 
 def calculate_total_inserted() -> float:
-    total = sum(member.get_coin_type() for member in CoinType)
+    total: float = sum(member.get_coin_type() for member in CoinType)
     return 0 if total < 0 else total
 
 
