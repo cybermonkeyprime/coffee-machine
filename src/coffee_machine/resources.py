@@ -1,7 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 
-from .ingredients import Ingredients
+from .ingredients import Ingredients, UnitType
 from .style.decorator_type import DecoratorType
 
 
@@ -25,18 +25,18 @@ class Resources(Mapping[str, int]):
             raise KeyError(key)
         return getattr(self, key)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator:
         return iter(self.__dataclass_fields__)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.__dataclass_fields__)
 
     @DecoratorType.PRINT_IN_YELLOW()
     def get_resource_info(self, key: str) -> str:
-        unit = Ingredients.get_units(key)
+        unit: UnitType = Ingredients.get_units(key)
         return f"{key.title()}: {getattr(self, key)}{unit}"
 
-    def get_all_info(self):
+    def get_all_info(self) -> None:
         for key in self:
             self.get_resource_info(key)
 
@@ -56,5 +56,5 @@ class ResourceValidator:
         return True
 
     @DecoratorType.PRINT_IN_YELLOW()
-    def on_resource_error(self, item):
+    def on_resource_error(self, item: str) -> str:
         return f"Sorry, there is not enough {item}."
