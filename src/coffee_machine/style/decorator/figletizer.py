@@ -1,14 +1,11 @@
 # src/ota_installer/decorators/figletizer.py
 from collections.abc import Callable
 from dataclasses import dataclass
-from enum import StrEnum, auto
 from functools import wraps
 
 from pyfiglet import figlet_format
 
-
-class FontType(StrEnum):
-    SLANT = auto()
+from ..fonts import FontType
 
 
 @dataclass(frozen=True, slots=True)

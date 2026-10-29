@@ -3,9 +3,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import wraps
 
-from coffee_machine.style.rich_colors import RichColors
-
-from .figletizer import FontType
+from ..fonts import FontType
+from ..rich_colors import RichColors
 from .protocol.decorator_protocols import GenericDecorator
 
 

@@ -1,26 +1,19 @@
+from collections.abc import Callable
 from enum import Enum
 from functools import partial
-
-from coffee_machine.style.decorator.colorizer import Colorizer
-from coffee_machine.style.decorator.styled_figlet_printer import (
-    StyledFigletPrinter,
-)
-from coffee_machine.style.decorator.styled_indent_printer import (
-    StylizedIndentPrinter,
-)
 
 from . import decorator
 from .decorator.figletizer import FontType
 from .rich_colors import RichColors
 
-print_in_color = partial(
+print_in_color: partial[Callable] = partial(
     decorator.StylizedIndentPrinter, indent=1, use_output=True
 )
 
-input_in_color = partial(
+input_in_color: partial[Callable] = partial(
     decorator.StylizedIndentPrinter, indent=2, use_output=False
 )
-padded_print = partial(print_in_color, begin="", end="\n\n")
+padded_print: partial[Callable] = partial(print_in_color, begin="", end="\n\n")
 
 
 class DecoratorType(Enum):
@@ -39,5 +32,9 @@ class DecoratorType(Enum):
 
     def __call__(
         self,
-    ) -> StyledFigletPrinter | StylizedIndentPrinter | Colorizer:
+    ) -> (
+        decorator.Colorizer
+        | decorator.StyledFigletPrinter
+        | decorator.StylizedIndentPrinter
+    ):
         return self.value
