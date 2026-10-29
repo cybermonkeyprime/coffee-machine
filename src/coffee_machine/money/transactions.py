@@ -20,24 +20,24 @@ class TransactionHandler:
         self.has_change()
         return True
 
-    def has_change(self):
+    def has_change(self) -> None:
         if (change := self.calculate_change()) > 0:
             has_change_message(change)
 
     def calculate_change(self) -> float:
-        return round(self.money_received - self.item_cost, 2)
+        return self.money_received - self.item_cost
 
-    def on_transaction_failure(self):
+    def on_transaction_failure(self) -> bool:
         return self.money_received < self.item_cost
 
 
 @DecoratorType.PRINT_IN_GREEN()
-def get_cash_collected(change: float):
+def get_cash_collected(change: float) -> str:
     return f"Cash collected is ${change:.2f}"
 
 
 @DecoratorType.PRINT_IN_GREEN()
-def has_change_message(change: float):
+def has_change_message(change: float) -> str:
     return f"Your Change is ${change:.2f}"
 
 
