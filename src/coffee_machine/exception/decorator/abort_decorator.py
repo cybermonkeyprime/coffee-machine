@@ -6,11 +6,10 @@ from functools import wraps
 from ...style import decorator as style
 from ...style.rich_colors import RichColors
 from ...style.style_renderer import indentation
-from .protocol.decorator_protocols import GenericDecorator
 
 
 @dataclass(frozen=True, slots=True)
-class AbortDecorator(GenericDecorator):
+class AbortDecorator:
     """Handle a specific exception and display a styled message."""
 
     def __call__(self, function: Callable) -> Callable:
