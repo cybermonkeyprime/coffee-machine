@@ -31,8 +31,8 @@ class DrinkType(Enum):
         return f"{self.name.title()}: ${self.value.price.amount:.2f}"
 
 
-DRINK_CONFIG = frozendict(  # pyright: ignore[reportUndefinedVariable]
-    {member.name.lower(): member.value for member in DrinkType}
+DRINK_CONFIG: frozendict[str, ItemSpec] = frozendict(  # pyright: ignore[reportUndefinedVariable]
+    {member.name.lower(): member.value for member in DrinkType}  # pyrefly: ignore[bad-argument-count]
 )
 
 

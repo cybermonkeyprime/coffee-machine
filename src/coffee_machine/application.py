@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import StrEnum
 
 from .drinks import DRINK_CONFIG, DrinkType
 from .exception.decorator.abort_decorator import AbortDecorator
@@ -11,25 +12,29 @@ from .style.decorator_type import DecoratorType
 from .versioning.version_config import SoftwareVersion
 
 
-@DecoratorType.FIGLETIZE_TITLE()
-def get_title() -> str:
-    return SoftwareVersion.TITLE.value
-
-
-@DecoratorType.PRINT_IN_RED()
-def on_invalid_option() -> str:
-    return "Please select a valid option."
-
-
-@DecoratorType.COLORIZE_IN_GREEN()
-def request_order() -> str:
-    return f"What would you like? ({'/'.join(DRINK_CONFIG.keys())}): "
-
-
 @dataclass(slots=True)
 class Status:
     is_on: bool
     profit: float
+
+
+class StrType(StrEnum):
+    INVALID_OPTION = "Please select a valid option."
+    REQUEST_ORDER = f"What would you like? ({'/'.join(DRINK_CONFIG.keys())}): "
+
+    def render(self) -> str:
+        decorator_map: frozendict[StrType, Callable] = frozendict(
+            {  # pyrefly: ignore [bad-argument-count]
+                StrType.INVALID_OPTION: DecoratorType.PRINT_IN_RED(),
+                StrType.REQUEST_ORDER: DecoratorType.COLORIZE_IN_GREEN(),
+            }
+        )
+        decorator: Callable | None = decorator_map.get(self)
+
+        def val_func():
+            return self.value
+
+        return decorator(val_func)() if decorator else self.value
 
 
 STATUS = Status(is_on=True, profit=0.0)
@@ -48,7 +53,7 @@ def turn_off() -> str:
 
 
 def process_drink_order(user_choice: str) -> None:
-    order_director = OrderDirector(user_choice)
+    order_director = OrderDirector(order=user_choice)
     order_director.process_order()
     STATUS.profit += order_director.profit
 
@@ -61,13 +66,15 @@ def coffee_machine() -> None:
         "report": get_report,
     }
     while STATUS.is_on:
-        user_choice = get_prompt(request_order(), str)
+        user_choice = get_prompt(
+            message=StrType.REQUEST_ORDER.render(), target_type=str
+        )
         if handler := options.get(user_choice):
             handler()
             continue
 
         if user_choice not in DRINK_CONFIG:
-            on_invalid_option()
+            StrType.INVALID_OPTION.render()
 
         if user_choice in DRINK_CONFIG:
             DrinkType[user_choice.upper()].item_price()
