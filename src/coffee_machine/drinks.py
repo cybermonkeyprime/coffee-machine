@@ -15,20 +15,16 @@ class ItemSpec:
 class DrinkType(Enum):
     ESPRESSO = ItemSpec(
         Ingredients(water=50, coffee=18),
-        Price(1.5),
+        Price(amount=1.5),
     )
     LATTE = ItemSpec(
         Ingredients(water=200, milk=150, coffee=24),
-        Price(2.5),
+        Price(amount=2.5),
     )
     CAPPUCCINO = ItemSpec(
         Ingredients(water=250, milk=100, coffee=24),
-        Price(3.0),
+        Price(amount=3.0),
     )
-
-    @DecoratorType.PRINT_IN_WHITE()
-    def item_price(self) -> str:
-        return f"{self.name.title()}: ${self.value.price.amount:.2f}"
 
 
 DRINK_CONFIG: frozendict[str, ItemSpec] = frozendict(  # pyright: ignore[reportUndefinedVariable]
@@ -36,9 +32,14 @@ DRINK_CONFIG: frozendict[str, ItemSpec] = frozendict(  # pyright: ignore[reportU
 )
 
 
+@DecoratorType.PRINT_IN_WHITE()
+def drink_price(drink: DrinkType) -> str:
+    return f"{drink.name.title()}: ${drink.value.price.amount:.2f}"
+
+
 def run() -> None:
     for drink in DrinkType:
-        drink.item_price()
+        drink_price(drink)
 
 
 if __name__ == "__main__":

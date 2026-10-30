@@ -3,7 +3,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 
-from .drinks import DRINK_CONFIG, DrinkType
+from .drinks import DRINK_CONFIG, DrinkType, drink_price
 from .exception.decorator.abort_decorator import AbortDecorator
 from .orders import OrderDirector
 from .prompt import get_prompt
@@ -12,7 +12,7 @@ from .style.decorator_type import DecoratorType
 from .versioning.version_config import SoftwareVersion
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class Status:
     is_on: bool
     profit: float
@@ -66,7 +66,7 @@ def coffee_machine() -> None:
         "report": get_report,
     }
     while STATUS.is_on:
-        user_choice = get_prompt(
+        user_choice: str = get_prompt(
             message=StrType.REQUEST_ORDER.render(), target_type=str
         )
         if handler := options.get(user_choice):
@@ -77,7 +77,7 @@ def coffee_machine() -> None:
             StrType.INVALID_OPTION.render()
 
         if user_choice in DRINK_CONFIG:
-            DrinkType[user_choice.upper()].item_price()
+            drink_price(DrinkType[user_choice.upper()])
             process_drink_order(user_choice)
 
 

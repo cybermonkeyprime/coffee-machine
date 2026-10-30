@@ -8,7 +8,7 @@ class UnitType(StrEnum):
     SOLID = "g"
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class Ingredients(Mapping[str, int]):
     water: int = 0
     milk: int = 0
