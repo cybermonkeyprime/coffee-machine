@@ -6,7 +6,7 @@ from .money.price import Price
 from .style.decorator_type import DecoratorType
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class ItemSpec:
     ingredients: Ingredients
     price: Price
@@ -14,16 +14,16 @@ class ItemSpec:
 
 class DrinkType(Enum):
     ESPRESSO = ItemSpec(
-        Ingredients(water=50, coffee=18),
-        Price(amount=1.5),
+        ingredients=Ingredients(water=50, coffee=18),
+        price=Price(amount=1.5),
     )
     LATTE = ItemSpec(
-        Ingredients(water=200, milk=150, coffee=24),
-        Price(amount=2.5),
+        ingredients=Ingredients(water=200, milk=150, coffee=24),
+        price=Price(amount=2.5),
     )
     CAPPUCCINO = ItemSpec(
-        Ingredients(water=250, milk=100, coffee=24),
-        Price(amount=3.0),
+        ingredients=Ingredients(water=250, milk=100, coffee=24),
+        price=Price(amount=3.0),
     )
 
 
