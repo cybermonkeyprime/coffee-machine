@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -20,13 +20,13 @@ class Ingredients(Mapping[str, int]):
             raise KeyError(key)
         return getattr(self, key)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator:
         # Crucial: This allows looping and dict conversion
         return iter(self.__dataclass_fields__)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.__dataclass_fields__)
 
     @classmethod
-    def get_units(cls, key):
+    def get_units(cls, key) -> UnitType:
         return UnitType.SOLID if key == "coffee" else UnitType.LIQUID
