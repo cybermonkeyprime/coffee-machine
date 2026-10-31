@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Self
 
-from loguru import logger
+from loguru import Logger, logger
 
 LogMethod = Callable[[dict[str, str]], None]
 
@@ -14,7 +14,7 @@ def fetch_logger_type(log_level: str) -> LogMethod:
 
 
 def bind_logger(log_level: str, log_data: dict[str, str]) -> LogMethod:
-    bound_logger = logger.bind(log_data=log_data).opt(depth=3)
+    bound_logger: Logger = logger.bind(log_data=log_data).opt(depth=3)
     return getattr(bound_logger, log_level)
 
 
@@ -30,10 +30,12 @@ class LogType(StrEnum):
     def raise_error(
         self, exception_type: type[BaseException], response: str
     ) -> None:
-        LogRenderer(self.value).handle_exception(exception_type, response)
+        LogRenderer(log_level=self.value).handle_exception(
+            exception_type, response
+        )
 
     def write(self, response: str) -> None:
-        LogRenderer(self.value).write_log(response)
+        LogRenderer(log_level=self.value).write_log(response)
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,9 +57,12 @@ class LogRenderer:
 
     def write_log(self, response):
         """Writes a simple structured log message."""
-        report_log = {"status": self.log_level, "response": response}
+        report_log: dict[str, str] = {
+            "status": self.log_level,
+            "response": response,
+        }
 
-        self.bind(report_log)(response)
+        self.bind(log_data=report_log)(response)
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,7 +77,7 @@ class ExceptionRenderer:
 
     @property
     def report_log(self) -> dict[str, str]:
-        struct = {"status": self.log_level}
+        struct: dict[str, str] = {"status": self.log_level}
 
         if self.exception_type is not None:
             struct["exception_type"] = self.exception_type.__name__
@@ -84,7 +89,7 @@ class ExceptionRenderer:
         return bind_logger(self.log_level, log_data)
 
     def log_report(self) -> Self:
-        self.bind(self.report_log)(self.response)
+        self.bind(log_data=self.report_log)(self.response)
 
         return self
 
