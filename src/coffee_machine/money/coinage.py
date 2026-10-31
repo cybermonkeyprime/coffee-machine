@@ -5,13 +5,13 @@ from ..prompt import get_prompt
 from ..style.decorator_type import DecoratorType
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class Denomination:
     coin_type: CoinType
     price: float
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class CoinCount:
     denomination: Denomination
     quantity: int
@@ -38,9 +38,11 @@ class CoinType(Enum):
     def get_coin_quantity(self) -> int:
         return get_prompt(message=self.get_input_request(), target_type=int)
 
-    def get_coin_type(self):
-        quantity = self.get_coin_quantity()
-        return CoinCount(self.get_denomination(), quantity).total_value
+    def get_coin_type(self) -> float:
+        quantity: int = self.get_coin_quantity()
+        return CoinCount(
+            denomination=self.get_denomination(), quantity=quantity
+        ).total_value
 
 
 COIN_CONFIG: frozendict[str, Denomination] = frozendict(  # pyright: ignore[reportUndefinedVariable]
@@ -58,7 +60,7 @@ def request_coinage() -> str:
     return "Please insert coins."
 
 
-def main():
+def main() -> None:
     calculate_total_inserted()
 
 

@@ -5,7 +5,7 @@ from .ingredients import Ingredients, UnitType
 from .style.decorator_type import DecoratorType
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class Resources(Mapping[str, int]):
     water: int = 0
     milk: int = 0
