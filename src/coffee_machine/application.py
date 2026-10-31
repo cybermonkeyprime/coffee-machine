@@ -82,14 +82,14 @@ def coffee_machine() -> None:
 
 
 def run() -> None:
-    functions: tuple[Callable, ...] = (
+    steps: tuple[Callable, ...] = (
         SoftwareVersion.header,
         coffee_machine,
     )
 
-    for function in functions:
-        if callable(function):
-            function()
+    for step in steps:
+        if callable(step):
+            step()
 
 
 if __name__ == "__main__":
