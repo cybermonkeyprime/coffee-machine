@@ -94,7 +94,9 @@ class OrderDirector:
 
     def execute_transaction(self) -> bool:
         money_received: float = calculate_total_inserted()
-        return TransactionHandler(money_received, self.drink_cost).execute()
+        return TransactionHandler(
+            money_received, item_cost=self.drink_cost
+        ).execute()
 
     def is_valid_order(self) -> ItemSpec | bool:
         return (
