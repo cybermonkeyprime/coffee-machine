@@ -31,7 +31,7 @@ class DrinkType(Enum):
     )
 
 
-DRINK_CONFIG: frozendict[str, ItemSpec] = frozendict(  # pyright: ignore[reportUndefinedVariable]
+DRINK_CONFIG: frozendict[str, ItemSpec] = frozendict(
     {member.name.lower(): member.value for member in DrinkType}  # pyrefly: ignore[bad-argument-count]
 )
 
@@ -52,7 +52,7 @@ class DrinkIngredientRenderer:
     @property
     def unit(self) -> str:
         unit: UnitType = Ingredients.get_units(key=self.ingredient)
-        return f" {unit}s" if unit == UnitType.PUMP else unit
+        return f"{unit}s" if unit == UnitType.PUMP else unit
 
     def render_all(self) -> str:
         return move_cursor_up() if self.valid_amount <= 0 else self.render()

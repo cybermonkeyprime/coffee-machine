@@ -1,18 +1,20 @@
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 
-from .ingredients import Ingredients, UnitType
 from .style.decorator_type import DecoratorType
 
 
 @dataclass(slots=True, kw_only=True)
-class Resources(Mapping[str, int]):
+class ResourceBase(Mapping[str, int]):
     water: int = 0
     milk: int = 0
     coffee: int = 0
     mocha: int = 0
     cream: int = 0
 
+
+@dataclass(slots=True, kw_only=True)
+class Resources(ResourceBase):
     def __setitem__(self, key: str, value: int) -> None:
         if key not in self.__dataclass_fields__:
             raise KeyError(f"'{key}' is not a valid field")
@@ -35,6 +37,8 @@ class Resources(Mapping[str, int]):
 
     @DecoratorType.PRINT_IN_YELLOW()
     def get_resource_info(self, key: str) -> str:
+        from .ingredients import Ingredients, UnitType
+
         unit: UnitType = Ingredients.get_units(key)
         return f"{key.title()}: {getattr(self, key)}{unit}"
 
@@ -48,7 +52,7 @@ RESOURCES = Resources(water=300, milk=200, coffee=100, mocha=50, cream=50)
 
 @dataclass(frozen=True, slots=True)
 class ResourceValidator:
-    ingredients: Ingredients
+    ingredients: ResourceBase
 
     @property
     def valid_resource_keys(self) -> tuple:

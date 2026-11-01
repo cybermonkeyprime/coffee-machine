@@ -27,7 +27,7 @@ class StylizedIndentPrinter(GenericDecorator):
         from . import Colorizer, IndentWrapper
         from .output_printer import OutputPrinter
 
-        decorated_func = IndentWrapper(interval=self.indent)(func)  # pyright: ignore[reportArgumentType]
+        decorated_func = IndentWrapper(interval=self.indent)(func)
         decorated_func = Colorizer(style=self.style)(decorated_func)
 
         if self.use_output:

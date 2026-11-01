@@ -1,6 +1,8 @@
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import StrEnum, auto
+
+from .resources import ResourceBase
 
 
 class UnitType(StrEnum):
@@ -9,14 +11,8 @@ class UnitType(StrEnum):
     PUMP = auto()
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
-class Ingredients(Mapping[str, int]):
-    water: int = 0
-    milk: int = 0
-    coffee: int = 0
-    mocha: int = 0
-    cream: int = 0
-
+@dataclass(slots=True, kw_only=True)
+class Ingredients(ResourceBase):
     def __getitem__(self, key: str) -> int:
         # Crucial: This allows dictionary-style lookup: obj['a']
         if key not in self.__dataclass_fields__:

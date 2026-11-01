@@ -5,7 +5,7 @@ from .ingredients import (
     IngredientRenderer,
     Ingredients,
 )
-from .money.coinage import calculate_total_inserted
+from .money.coinage import calculate_total_inserted, request_coinage
 from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
@@ -87,6 +87,7 @@ class OrderDirector:
         OrderMaker(item_name=self.order).execute()
 
     def execute_transaction(self) -> bool:
+        request_coinage()
         return TransactionHandler(
             money_received=calculate_total_inserted(),
             item_cost=self.drink_cost,

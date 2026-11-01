@@ -10,6 +10,17 @@ class Denomination:
     coin_type: CoinType
     price: float
 
+    @DecoratorType.INPUT_IN_YELLOW()
+    def get_input_request(self) -> str:
+        return f"How many {self.coin_type.name.title()}? "
+
+    def get_coin_quantity(self) -> int:
+        return get_prompt(message=self.get_input_request(), target_type=int)
+
+    def get_coin_type(self) -> float:
+        quantity: int = self.get_coin_quantity()
+        return CoinCount(denomination=self, quantity=quantity).total_value
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class CoinCount:
@@ -31,33 +42,24 @@ class CoinType(Enum):
     def get_denomination(self) -> Denomination:
         return Denomination(coin_type=self, price=self.value)
 
-    @DecoratorType.INPUT_IN_YELLOW()
-    def get_input_request(self) -> str:
-        return f"How many {self.name.title()}? "
 
-    def get_coin_quantity(self) -> int:
-        return get_prompt(message=self.get_input_request(), target_type=int)
-
-    def get_coin_type(self) -> float:
-        quantity: int = self.get_coin_quantity()
-        return CoinCount(
-            denomination=self.get_denomination(), quantity=quantity
-        ).total_value
-
-
-COIN_CONFIG: frozendict[str, Denomination] = frozendict(  # pyright: ignore[reportUndefinedVariable]
-    {member.name.lower(): member.get_denomination() for member in CoinType}  # pyrefly: ignore[bad-argument-count]
+COIN_CONFIG: frozendict[str, Denomination] = frozendict(
+    {  # pyrefly: ignore[bad-argument-count]
+        member.name.lower(): member.get_denomination() for member in CoinType
+    }
 )
 
 
 def calculate_total_inserted() -> float:
-    total: float = sum(member.get_coin_type() for member in CoinType)
+    total: float = sum(
+        member.get_denomination().get_coin_type() for member in CoinType
+    )
     return 0 if total < 0 else total
 
 
-@DecoratorType.PRINT_IN_GREEN()
+@DecoratorType.PRINT_IN_WHITE()
 def request_coinage() -> str:
-    return "Please insert coins."
+    return "Please insert coins or bills:"
 
 
 def main() -> None:

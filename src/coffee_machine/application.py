@@ -5,7 +5,6 @@ from enum import StrEnum
 
 from .drinks import DRINK_CONFIG, DrinkType, ItemSpec, drink_price
 from .exception.decorator.abort_decorator import AbortDecorator
-from .ingredients import IngredientRenderer
 from .orders import OrderDirector
 from .prompt import get_prompt
 from .resources import RESOURCES
