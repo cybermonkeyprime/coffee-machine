@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
 from .drinks import DRINK_CONFIG, ItemSpec
-from .ingredients import Ingredients, UnitType
+from .ingredients import (
+    IngredientRenderer,
+    Ingredients,
+)
 from .money.coinage import calculate_total_inserted
 from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
@@ -21,21 +24,12 @@ class OrderMaker:
         for item, amount in self.item_ingredients.items():
             RESOURCES[item] -= amount
 
-    @DecoratorType.PRINT_IN_YELLOW()
-    def add_ingredient(self, ingredient: str) -> str:
-        unit: UnitType = Ingredients.get_units(key=ingredient)
-        return (
-            f"Adding {self.item_ingredients[ingredient]}{unit} of {ingredient}"
-        )
-
     @DecoratorType.PRINT_PADDED_YELLOW()
     def prep_msg(self) -> str:
         return "Preparing your order ..."
 
     def add_ingredients(self) -> None:
-        for ingredient in self.item_ingredients:
-            self.add_ingredient(ingredient)
-        print()
+        IngredientRenderer(drink=self.item_name).render_all()
 
     @DecoratorType.PRINT_PADDED_YELLOW()
     def blend_order(self) -> str:
@@ -93,9 +87,9 @@ class OrderDirector:
         OrderMaker(item_name=self.order).execute()
 
     def execute_transaction(self) -> bool:
-        money_received: float = calculate_total_inserted()
         return TransactionHandler(
-            money_received, item_cost=self.drink_cost
+            money_received=calculate_total_inserted(),
+            item_cost=self.drink_cost,
         ).execute()
 
     def is_valid_order(self) -> ItemSpec | bool:
@@ -103,7 +97,3 @@ class OrderDirector:
             self.drink_info
             and ResourceValidator(self.drink_ingredients).validate()
         )
-
-    @DecoratorType.PRINT_IN_YELLOW()
-    def fetch_order_info(self) -> str:
-        return f"{self.order.title()}: ${self.drink_cost:.2f}"

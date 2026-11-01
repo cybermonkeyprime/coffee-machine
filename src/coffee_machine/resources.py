@@ -10,6 +10,8 @@ class Resources(Mapping[str, int]):
     water: int = 0
     milk: int = 0
     coffee: int = 0
+    mocha: int = 0
+    cream: int = 0
 
     def __setitem__(self, key: str, value: int) -> None:
         if key not in self.__dataclass_fields__:
@@ -41,20 +43,38 @@ class Resources(Mapping[str, int]):
             self.get_resource_info(key)
 
 
-RESOURCES = Resources(water=300, milk=200, coffee=100)
+RESOURCES = Resources(water=300, milk=200, coffee=100, mocha=50, cream=50)
 
 
 @dataclass(frozen=True, slots=True)
 class ResourceValidator:
     ingredients: Ingredients
 
+    @property
+    def valid_resource_keys(self) -> tuple:
+        return tuple(key.title() for key in RESOURCES)
+
     def validate(self) -> bool:
         for item, amount in self.ingredients.items():
-            if amount > RESOURCES[item]:
+            if self.invalid_item(item):
+                self.on_not_found_error(item)
+                return False
+
+            if self.invalid_resource_amount(resource=item, amount=amount):
                 self.on_resource_error(item)
                 return False
         return True
 
-    @DecoratorType.PRINT_IN_YELLOW()
+    @DecoratorType.PRINT_IN_RED()
+    def on_not_found_error(self, item: str) -> str:
+        return f"{item.title()} not found in {self.valid_resource_keys}"
+
+    @DecoratorType.PRINT_IN_RED()
     def on_resource_error(self, item: str) -> str:
-        return f"Sorry, there is not enough {item}."
+        return f"Sorry, there is not enough {item.title()}."
+
+    def invalid_item(self, item) -> bool:
+        return item.title() not in self.valid_resource_keys
+
+    def invalid_resource_amount(self, resource: str, amount: int) -> bool:
+        return amount > RESOURCES.get(resource, 0)

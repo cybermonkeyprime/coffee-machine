@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ..style.decorator_type import DecoratorType
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class TransactionHandler:
     money_received: float
     item_cost: float

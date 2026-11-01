@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Self
 
-from loguru import Logger, logger
+from loguru import logger
 
 LogMethod = Callable[[dict[str, str]], None]
 
@@ -14,7 +14,7 @@ def fetch_logger_type(log_level: str) -> LogMethod:
 
 
 def bind_logger(log_level: str, log_data: dict[str, str]) -> LogMethod:
-    bound_logger: Logger = logger.bind(log_data=log_data).opt(depth=3)
+    bound_logger = logger.bind(log_data=log_data).opt(depth=3)
     return getattr(bound_logger, log_level)
 
 
