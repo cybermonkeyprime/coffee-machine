@@ -26,8 +26,8 @@ class DrinkType(Enum):
         price=Price(amount=3.0),
     )
     COCOA = ItemSpec(
-        ingredients=Ingredients(milk=100, mocha=4, cream=1),
-        price=Price(amount=1.5),
+        ingredients=Ingredients(milk=100, mocha=3, cream=1),
+        price=Price(amount=1.0),
     )
 
 
@@ -52,7 +52,7 @@ class DrinkIngredientRenderer:
     @property
     def unit(self) -> str:
         unit: UnitType = Ingredients.get_units(key=self.ingredient)
-        return f"{unit}s" if unit == UnitType.PUMP else unit
+        return f" {unit}" if unit == UnitType.PUMPS else unit
 
     def render_all(self) -> str:
         return move_cursor_up() if self.valid_amount <= 0 else self.render()

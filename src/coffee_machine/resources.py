@@ -45,9 +45,10 @@ class Resources(ResourceBase):
     def get_all_info(self) -> None:
         for key in self:
             self.get_resource_info(key)
+        print()
 
 
-RESOURCES = Resources(water=300, milk=200, coffee=100, mocha=50, cream=50)
+RESOURCES = Resources(water=300, milk=200, coffee=100, mocha=20, cream=10)
 
 
 @dataclass(frozen=True, slots=True)

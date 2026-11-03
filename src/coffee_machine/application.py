@@ -3,8 +3,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 
-from .drinks import DRINK_CONFIG, DrinkType, ItemSpec, drink_price
+from .drinks import DRINK_CONFIG, DrinkType, drink_price
 from .exception.decorator.abort_decorator import AbortDecorator
+from .menu import get_drink_menu
 from .orders import OrderDirector
 from .prompt import get_prompt
 from .resources import RESOURCES
@@ -59,30 +60,6 @@ def process_drink_order(user_choice: str) -> None:
     STATUS.profit += order_director.profit
 
 
-def drink_menu() -> None:
-    for drink in DRINK_CONFIG:
-        MenuRenderer(drink).drink_info()
-
-
-@dataclass(frozen=True, slots=True)
-class MenuRenderer:
-    drink: str
-    data: frozendict[str, ItemSpec] = DRINK_CONFIG
-
-    @property
-    def drink_name(self) -> str:
-        return self.drink.title()
-
-    @property
-    def drink_price(self) -> str:
-        price: float = DRINK_CONFIG[self.drink].price.amount
-        return f"${price:.2f}"
-
-    @DecoratorType.PRINT_IN_YELLOW()
-    def drink_info(self) -> str:
-        return f"{self.drink_name:<12} {self.drink_price:>7}"
-
-
 @AbortDecorator()
 def coffee_machine() -> None:
     """Main function to run the coffee machine."""
@@ -106,14 +83,15 @@ def coffee_machine() -> None:
             process_drink_order(user_choice)
 
 
-def run() -> None:
-    steps: tuple[Callable, ...] = (
-        SoftwareVersion.header,
-        drink_menu,
-        coffee_machine,
-    )
+APPLICATION_STEPS: tuple[Callable, ...] = (
+    SoftwareVersion.header,
+    get_drink_menu,
+    coffee_machine,
+)
 
-    for step in steps:
+
+def run() -> None:
+    for step in APPLICATION_STEPS:
         if callable(step):
             step()
 
