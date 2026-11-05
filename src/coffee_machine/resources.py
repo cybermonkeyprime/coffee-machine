@@ -18,10 +18,12 @@ class Resources(ResourceBase):
     def __setitem__(self, key: str, value: int) -> None:
         if key not in self.__dataclass_fields__:
             raise KeyError(f"'{key}' is not a valid field")
+
         if not isinstance(value, int):
             raise TypeError(
                 f"Value for '{key}' must be an int, got {type(value).__name__}"
             )
+
         setattr(self, key, value)
 
     def __getitem__(self, key: str) -> int:
@@ -39,7 +41,9 @@ class Resources(ResourceBase):
     def get_resource_info(self, key: str) -> str:
         from .ingredients import Ingredients, UnitType
 
-        if (unit := Ingredients.get_units(key)) == UnitType.VOID:
+        unit = Ingredients.get_units(key)
+
+        if unit == UnitType.VOID:
             return f"{key.title()}: {getattr(self, key)}"
 
         return f"{key.title()}: {getattr(self, key)}{unit}"

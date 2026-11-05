@@ -8,7 +8,7 @@ from .resources import ResourceBase
 class UnitType(StrEnum):
     LIQUID = "ml"
     GROUND = "g"
-    PUMPS = auto()
+    PUMP = auto()
     VOID = auto()
 
 
@@ -32,7 +32,7 @@ class Ingredients(ResourceBase):
         unit_map: frozendict[str, UnitType] = frozendict(
             {  # pyrefly: ignore[bad-argument-count]
                 "coffee": UnitType.GROUND,
-                "mocha": UnitType.PUMPS,
+                "mocha": UnitType.PUMP,
                 "cream": UnitType.VOID,
             }
         )
