@@ -26,7 +26,7 @@ class DrinkType(Enum):
         price=Price(amount=3.0),
     )
     COCOA = ItemSpec(
-        ingredients=Ingredients(milk=100, mocha=3, cream=1),
+        ingredients=Ingredients(milk=100, mocha=2, cream=1),
         price=Price(amount=1.0),
     )
 
@@ -70,13 +70,22 @@ class DrinkIngredientRenderer:
     @DecoratorType.PRINT_IN_YELLOW()
     def render(self) -> str:
         return (
+            self.render_wo_description()
+            if self.unit == UnitType.VOID
+            else self.render_w_description()
+        )
+
+    def render_w_description(self) -> str:
+        return (
             f"Adding {self.valid_ingredient_amount}{self.unit} "
             f"of {self.ingredient_name}"
         )
 
+    def render_wo_description(self) -> str:
+        return f"Adding {self.ingredient_name}"
+
 
 def get_valid_ingredient_amount(drink, ingredient) -> int:
-
     item_ingredients: Ingredients = get_drink_ingredients(drink=drink)
     return item_ingredients.get(ingredient) or 0
 
@@ -85,17 +94,17 @@ def move_cursor_up() -> str:
     return "\033[A"
 
 
-@DecoratorType.PRINT_IN_WHITE()
-def drink_price(drink: DrinkType) -> str:
-    return f"{drink.name.title()}: ${drink.value.price.amount:.2f}"
-
-
 def get_drink_ingredients(*, drink: str) -> Ingredients:
 
     if drink not in DRINK_CONFIG:
         raise KeyError(f"{drink} not in DRINK_CONFIG")
 
     return DRINK_CONFIG[drink].ingredients
+
+
+@DecoratorType.PRINT_IN_WHITE()
+def drink_price(drink: DrinkType) -> str:
+    return f"{drink.name.title()}: ${drink.value.price.amount:.2f}"
 
 
 def run() -> None:

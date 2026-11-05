@@ -9,6 +9,7 @@ class UnitType(StrEnum):
     LIQUID = "ml"
     GROUND = "g"
     PUMPS = auto()
+    VOID = auto()
 
 
 @dataclass(slots=True, kw_only=True)
@@ -32,7 +33,7 @@ class Ingredients(ResourceBase):
             {  # pyrefly: ignore[bad-argument-count]
                 "coffee": UnitType.GROUND,
                 "mocha": UnitType.PUMPS,
-                "cream": UnitType.PUMPS,
+                "cream": UnitType.VOID,
             }
         )
         return unit_map.get(key, UnitType.LIQUID)
