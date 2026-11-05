@@ -39,7 +39,9 @@ class Resources(ResourceBase):
     def get_resource_info(self, key: str) -> str:
         from .ingredients import Ingredients, UnitType
 
-        unit: UnitType = Ingredients.get_units(key)
+        if (unit := Ingredients.get_units(key)) == UnitType.VOID:
+            return f"{key.title()}: {getattr(self, key)}"
+
         return f"{key.title()}: {getattr(self, key)}{unit}"
 
     def get_all_info(self) -> None:
