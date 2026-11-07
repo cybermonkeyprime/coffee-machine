@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass
+from decimal import Decimal
 
 from .drinks import DRINK_CONFIG, ItemSpec
 from .style.decorator_type import DecoratorType
@@ -16,7 +17,7 @@ class MenuItemRenderer:
 
     @property
     def drink_price(self) -> str:
-        price: float = self.specs.price.amount
+        price: Decimal = self.specs.price
         return f"${price:.2f}"
 
     @DecoratorType.PRINT_IN_YELLOW()

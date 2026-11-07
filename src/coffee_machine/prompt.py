@@ -25,9 +25,11 @@ def get_prompt(
             return 0 if target_type is int else ""
 
         if target_type is int:
-            return int(user_input)
-
-            invalid_response(target_type=int)
+            try:
+                return int(user_input)
+            except ValueError:
+                invalid_response(target_type=int)
+                continue
 
         if target_type is str:
             if user_input.isalpha():

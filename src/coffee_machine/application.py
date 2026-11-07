@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from collections.abc import Callable
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import StrEnum
 
+from .cursor_ctrl import clear_screen
 from .drinks import DRINK_CONFIG, DrinkType, drink_price
 from .exception.decorator.abort_decorator import AbortDecorator
 from .menu import get_drink_menu
@@ -16,7 +18,7 @@ from .versioning.version_config import SoftwareVersion
 @dataclass(slots=True, kw_only=True)
 class Status:
     is_on: bool
-    profit: float
+    profit: Decimal
 
 
 class StrType(StrEnum):
@@ -39,7 +41,7 @@ class StrType(StrEnum):
         return decorator(val_func)() if decorator else self.value
 
 
-STATUS = Status(is_on=True, profit=0.0)
+STATUS = Status(is_on=True, profit=Decimal(0.0))
 
 
 @DecoratorType.PRINT_IN_YELLOW()
@@ -63,6 +65,7 @@ def process_drink_order(user_choice: str) -> None:
 @AbortDecorator()
 def coffee_machine() -> None:
     """Main function to run the coffee machine."""
+
     options: dict[str, Callable] = {
         "quit": turn_off,
         "report": get_report,
@@ -81,9 +84,11 @@ def coffee_machine() -> None:
         if user_choice in DRINK_CONFIG:
             drink_price(DrinkType[user_choice.upper()])
             process_drink_order(user_choice)
+        # clear_screen()
 
 
 APPLICATION_STEPS: tuple[Callable, ...] = (
+    clear_screen,
     SoftwareVersion.header,
     get_drink_menu,
     coffee_machine,

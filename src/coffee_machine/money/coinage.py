@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum
 
+from ..cursor_ctrl import move_cursor_up
 from ..prompt import get_prompt
 from ..style.decorator_type import DecoratorType
 
@@ -8,16 +10,19 @@ from ..style.decorator_type import DecoratorType
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Denomination:
     coin_type: CoinType
-    price: float
+    price: Decimal
 
     @DecoratorType.INPUT_IN_YELLOW()
     def get_input_request(self) -> str:
         return f"How many {self.coin_type.name.title()}? "
 
     def get_quantity(self) -> int:
-        return get_prompt(message=self.get_input_request(), target_type=int)
+        prompt = get_prompt(message=self.get_input_request(), target_type=int)
+        if prompt == 0:
+            print(move_cursor_up())
+        return prompt
 
-    def get_total_value(self) -> float:
+    def get_total_value(self) -> Decimal:
         quantity: int = self.get_quantity()
         return CoinCount(denomination=self, quantity=quantity).total_value
 
@@ -28,16 +33,16 @@ class CoinCount:
     quantity: int
 
     @property
-    def total_value(self) -> float:
+    def total_value(self) -> Decimal:
         return self.quantity * self.denomination.price
 
 
 class CoinType(Enum):
-    PENNIES = 0.01
-    NICKELS = 0.05
-    DIMES = 0.10
-    QUARTERS = 0.25
-    DOLLARS = 1.00
+    PENNIES = Decimal(value="0.01")
+    NICKELS = Decimal(value="0.05")
+    DIMES = Decimal(value="0.10")
+    QUARTERS = Decimal(value="0.25")
+    DOLLARS = Decimal(value="1.00")
 
     @property
     def denomination(self) -> Denomination:
@@ -51,11 +56,13 @@ COIN_CONFIG: frozendict[str, Denomination] = frozendict(
 )
 
 
-def calculate_total_inserted() -> float:
-    total: float = sum(
-        member.denomination.get_total_value() for member in CoinType
+def calculate_total_inserted() -> Decimal:
+
+    total: Decimal = sum(
+        (member.denomination.get_total_value() for member in CoinType),
+        start=Decimal(value="0"),
     )
-    return 0 if total < 0 else total
+    return max(total, Decimal(value="0"))
 
 
 @DecoratorType.PRINT_IN_WHITE()

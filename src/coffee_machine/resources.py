@@ -41,7 +41,7 @@ class Resources(ResourceBase):
     def get_resource_info(self, key: str) -> str:
         from .ingredients import Ingredients, UnitType
 
-        unit = Ingredients.get_units(key)
+        unit: UnitType = Ingredients.get_units(key)
 
         if unit == UnitType.VOID:
             return f"{key.title()}: {getattr(self, key)}"
@@ -54,7 +54,7 @@ class Resources(ResourceBase):
         print()
 
 
-RESOURCES = Resources(water=300, milk=200, coffee=100, mocha=20, cream=10)
+RESOURCES = Resources(water=300, milk=200, coffee=100, mocha=20, cream=8)
 
 
 @dataclass(frozen=True, slots=True)

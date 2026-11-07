@@ -1,4 +1,7 @@
+from collections.abc import Callable
 from dataclasses import dataclass
+from decimal import Decimal
+from enum import StrEnum
 
 from .drinks import DRINK_CONFIG, ItemSpec
 from .ingredients import (
@@ -9,6 +12,16 @@ from .money.coinage import calculate_total_inserted, request_coinage
 from .money.transactions import TransactionHandler
 from .resources import RESOURCES, ResourceValidator
 from .style.decorator_type import DecoratorType
+
+
+class PrepStep(StrEnum):
+    PREP_MSG = "Preparing your order ..."
+    BLEND_ORDER = "Blendng it all together ..."
+    HEAT_ORDER = "Heating to 96°C ..."
+
+    @DecoratorType.PRINT_PADDED_YELLOW()
+    def render(self) -> str:
+        return self.value
 
 
 @dataclass(frozen=True, slots=False)
@@ -24,44 +37,44 @@ class OrderMaker:
         for item, amount in self.item_ingredients.items():
             RESOURCES[item] -= amount
 
-    @DecoratorType.PRINT_PADDED_YELLOW()
-    def prep_msg(self) -> str:
-        return "Preparing your order ..."
-
     def add_ingredients(self) -> None:
         IngredientRenderer(drink=self.item_name).render_all()
 
-    @DecoratorType.PRINT_PADDED_YELLOW()
-    def blend_order(self) -> str:
-        return "Blendng it all together ..."
-
-    @DecoratorType.PRINT_IN_YELLOW()
-    def heat_order(self) -> str:
-        return "Heating to 96°C ...\n"
-
     @DecoratorType.PRINT_IN_YELLOW()
     def give_order(self) -> str:
-        return f"Here is your {self.item_name.title()}☕"
+        return f"Here is your {self.item_name.title()}!☕"
 
     def preparation(self) -> None:
-        steps = ("prep_msg", "add_ingredients", "blend_order", "heat_order")
-        self.order_pipeline(steps)
+        steps: tuple[Callable, ...] = (
+            PrepStep.PREP_MSG.render,
+            self.add_ingredients,
+            PrepStep.BLEND_ORDER.render,
+            PrepStep.HEAT_ORDER.render,
+        )
+        self.preparation_pipeline(steps=steps)
 
     def execute(self) -> None:
         steps = ("deduct_ingredients", "preparation", "give_order")
-        self.order_pipeline(steps)
+        self.getattr_pipeline(steps)
 
-    def order_pipeline(self, steps: tuple) -> None:
+    def getattr_pipeline(self, steps: tuple) -> None:
         for step in steps:
             callback: str | None = getattr(self, step)
             if callable(callback):
                 callback()
+        print()
+
+    def preparation_pipeline(self, steps: tuple) -> None:
+        for step in steps:
+            if callable(step):
+                step()
+        # print()
 
 
 @dataclass(slots=True)
 class OrderDirector:
     order: str
-    profit: float = 0.0
+    profit: Decimal = Decimal(value="0")
 
     @property
     def drink_info(self) -> ItemSpec:
@@ -72,8 +85,8 @@ class OrderDirector:
         return self.drink_info.ingredients
 
     @property
-    def drink_cost(self) -> float:
-        return self.drink_info.price.amount
+    def drink_cost(self) -> Decimal:
+        return Decimal(value=self.drink_info.price)
 
     def process_order(self) -> None:
         if not self.is_valid_order():
@@ -82,7 +95,7 @@ class OrderDirector:
         if not self.execute_transaction():
             return
 
-        self.profit += self.drink_cost
+        self.profit += Decimal(value=self.drink_cost)
 
         OrderMaker(item_name=self.order).execute()
 
