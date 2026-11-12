@@ -20,7 +20,7 @@ class Resources(ResourceBase):
             self.on_missing_key(key),
             self.on_invalid_type(key, value),
         ]
-        for error, response in error_pipline:
+        for error, response in iter(error_pipline):
             if error:
                 raise response
 
@@ -89,14 +89,14 @@ class ResourceValidator:
             self.on_missing_resource_name(name),
             self.on_insufficient_resource(name, quantity),
         ]
-        for invalid, error_message in pipeline:
-            if invalid:
-                self.on_error(message=error_message)
+        for error, response in pipeline:
+            if error:
+                self.on_error(message=response)
                 return False
         return True
 
     def on_missing_resource_name(self, name: str) -> tuple[bool, str]:
-        titlized_name = name.title()
+        titlized_name: str = name.title()
         return (
             titlized_name not in self.valid_resource_keys,
             f"{titlized_name} not found in {self.valid_resource_keys}",
