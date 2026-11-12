@@ -45,18 +45,16 @@ class DrinkIngredientRenderer:
     ingredient: str
 
     @property
-    def valid_amount(self) -> int:
-        return get_valid_ingredient_amount(
-            self.drink, ingredient=self.ingredient
-        )
-
-    @property
     def unit(self) -> str:
         unit: UnitType = Ingredients.get_units(key=self.ingredient)
         return f" {unit}s" if unit == UnitType.PUMP else unit
 
     def render_all(self) -> str:
-        return move_cursor_up() if self.valid_amount <= 0 else self.render()
+        return (
+            move_cursor_up()
+            if self.valid_ingredient_amount <= 0
+            else self.render()
+        )
 
     @property
     def ingredient_name(self) -> str:
@@ -64,9 +62,8 @@ class DrinkIngredientRenderer:
 
     @property
     def valid_ingredient_amount(self) -> int:
-        return get_valid_ingredient_amount(
-            self.drink, ingredient=self.ingredient
-        )
+        item_ingredients: Ingredients = get_drink_ingredients(drink=self.drink)
+        return item_ingredients.get(self.ingredient) or 0
 
     @DecoratorType.PRINT_IN_YELLOW()
     def render(self) -> str:
@@ -84,11 +81,6 @@ class DrinkIngredientRenderer:
 
     def render_wo_description(self) -> str:
         return f"Adding {self.ingredient_name}"
-
-
-def get_valid_ingredient_amount(drink, ingredient) -> int:
-    item_ingredients: Ingredients = get_drink_ingredients(drink=drink)
-    return item_ingredients.get(ingredient) or 0
 
 
 def get_drink_ingredients(*, drink: str) -> Ingredients:

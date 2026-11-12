@@ -89,7 +89,7 @@ class ResourceValidator:
             self.on_missing_resource_name(name),
             self.on_insufficient_resource(name, quantity),
         ]
-        for error, response in pipeline:
+        for error, response in iter(pipeline):
             if error:
                 self.on_error(message=response)
                 return False
