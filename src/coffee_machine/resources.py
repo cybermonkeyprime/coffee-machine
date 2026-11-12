@@ -16,11 +16,11 @@ class ResourceBase(Mapping[str, int]):
 @dataclass(slots=True, kw_only=True)
 class Resources(ResourceBase):
     def __setitem__(self, key: str, value: int) -> None:
-        error_pipline: list[tuple[bool, KeyError | TypeError]] = [
+        error_pipeline: list[tuple[bool, KeyError | TypeError]] = [
             self.on_missing_key(key),
             self.on_invalid_type(key, value),
         ]
-        for error, response in iter(error_pipline):
+        for error, response in iter(error_pipeline):
             if error:
                 raise response
 
@@ -80,8 +80,8 @@ class ResourceValidator:
 
     def validate_all(self) -> bool:
         return all(
-            self.validate_resource(name=name, quantity=quantity)
-            for name, quantity in self.ingredients.items()
+            self.validate_resource(name=key, quantity=value)
+            for key, value in self.ingredients.items()
         )
 
     def validate_resource(self, *, name: str, quantity: int) -> bool:
