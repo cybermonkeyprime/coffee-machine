@@ -68,7 +68,6 @@ class OrderMaker:
         for step in steps:
             if callable(step):
                 step()
-        # print()
 
 
 @dataclass(slots=True)
@@ -88,11 +87,12 @@ class OrderDirector:
     def drink_cost(self) -> Decimal:
         return Decimal(value=self.drink_info.price)
 
-    def process_order(self) -> None:
-        if not self.is_valid_order():
-            return
+    def order_rules(self) -> ItemSpec | bool:
+        return self.validate_order() and self.execute_transaction()
 
-        if not self.execute_transaction():
+    def process_order(self) -> None:
+
+        if not self.order_rules():
             return
 
         self.profit += Decimal(value=self.drink_cost)
@@ -106,8 +106,8 @@ class OrderDirector:
             item_cost=self.drink_cost,
         ).execute()
 
-    def is_valid_order(self) -> ItemSpec | bool:
+    def validate_order(self) -> ItemSpec | bool:
         return (
             self.drink_info
-            and ResourceValidator(self.drink_ingredients).validate()
+            and ResourceValidator(self.drink_ingredients).validate_all()
         )

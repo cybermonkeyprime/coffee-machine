@@ -39,7 +39,7 @@ def get_prompt(
 
 
 @overload
-def invalid_response(*, target_type: type[int]) -> int: ...
+def invalid_response(*, target_type: type[int]) -> str: ...
 
 
 @overload
@@ -47,6 +47,6 @@ def invalid_response(*, target_type: type[str]) -> str: ...
 
 
 @DecoratorType.PRINT_IN_RED()
-def invalid_response(target_type: type[int] | type[str]) -> int | str:
-    value: str = "only numbers" if target_type is int else "only text"
-    return f"Invalid option! Please enter {value}."
+def invalid_response(target_type: type[int] | type[str]) -> str:
+    output_type: str = "numbers" if target_type is int else "text"
+    return f"Invalid option! Please enter only {output_type}."

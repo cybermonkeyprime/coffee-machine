@@ -16,15 +16,29 @@ class ResourceBase(Mapping[str, int]):
 @dataclass(slots=True, kw_only=True)
 class Resources(ResourceBase):
     def __setitem__(self, key: str, value: int) -> None:
-        if key not in self.__dataclass_fields__:
-            raise KeyError(f"'{key}' is not a valid field")
-
-        if not isinstance(value, int):
-            raise TypeError(
-                f"Value for '{key}' must be an int, got {type(value).__name__}"
-            )
+        error_pipline: list[tuple[bool, KeyError | TypeError]] = [
+            self.on_missing_key(key),
+            self.on_invalid_type(key, value),
+        ]
+        for error, response in error_pipline:
+            if error:
+                raise response
 
         setattr(self, key, value)
+
+    def on_missing_key(self, key: str) -> tuple[bool, KeyError]:
+        return (
+            key not in self.__dataclass_fields__,
+            KeyError(f"'{key}' is not a valid field"),
+        )
+
+    def on_invalid_type(self, key: str, value: int) -> tuple[bool, TypeError]:
+        return (
+            not isinstance(value, int),
+            TypeError(
+                f"Value for '{key}' must be an int, got {type(value).__name__}"
+            ),
+        )
 
     def __getitem__(self, key: str) -> int:
         if key not in self.__dataclass_fields__:
@@ -43,10 +57,9 @@ class Resources(ResourceBase):
 
         unit: UnitType = Ingredients.get_units(key)
 
-        if unit == UnitType.VOID:
-            return f"{key.title()}: {getattr(self, key)}"
+        base_output: str = f"{key.title()}: {getattr(self, key)}"
 
-        return f"{key.title()}: {getattr(self, key)}{unit}"
+        return base_output if unit == UnitType.VOID else f"{base_output}{unit}"
 
     def get_all_info(self) -> None:
         for key in self:
@@ -65,27 +78,38 @@ class ResourceValidator:
     def valid_resource_keys(self) -> tuple:
         return tuple(key.title() for key in RESOURCES)
 
-    def validate(self) -> bool:
-        for item, amount in self.ingredients.items():
-            if self.invalid_item(item):
-                self.on_not_found_error(item)
-                return False
+    def validate_all(self) -> bool:
+        return all(
+            self.validate_resource(name=name, quantity=quantity)
+            for name, quantity in self.ingredients.items()
+        )
 
-            if self.invalid_resource_amount(resource=item, amount=amount):
-                self.on_resource_error(item)
+    def validate_resource(self, *, name: str, quantity: int) -> bool:
+        pipeline: list[tuple[bool, str]] = [
+            self.on_missing_resource_name(name),
+            self.on_insufficient_resource(name, quantity),
+        ]
+        for invalid, error_message in pipeline:
+            if invalid:
+                self.on_error(message=error_message)
                 return False
         return True
 
-    @DecoratorType.PRINT_IN_RED()
-    def on_not_found_error(self, item: str) -> str:
-        return f"{item.title()} not found in {self.valid_resource_keys}"
+    def on_missing_resource_name(self, name: str) -> tuple[bool, str]:
+        titlized_name = name.title()
+        return (
+            titlized_name not in self.valid_resource_keys,
+            f"{titlized_name} not found in {self.valid_resource_keys}",
+        )
+
+    def on_insufficient_resource(
+        self, name: str, quantity: int
+    ) -> tuple[bool, str]:
+        return (
+            quantity > RESOURCES.get(name, 0),
+            f"Sorry, there is not enough {name.title()}.",
+        )
 
     @DecoratorType.PRINT_IN_RED()
-    def on_resource_error(self, item: str) -> str:
-        return f"Sorry, there is not enough {item.title()}."
-
-    def invalid_item(self, item) -> bool:
-        return item.title() not in self.valid_resource_keys
-
-    def invalid_resource_amount(self, resource: str, amount: int) -> bool:
-        return amount > RESOURCES.get(resource, 0)
+    def on_error(self, *, message):
+        return message
