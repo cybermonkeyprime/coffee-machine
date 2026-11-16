@@ -2,7 +2,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import StrEnum, auto
 
-from .resources import ResourceBase
+from .resources import ResourceBase, ResourceType
 
 
 class UnitType(StrEnum):
@@ -29,11 +29,11 @@ class Ingredients(ResourceBase):
 
     @classmethod
     def get_units(cls, key) -> UnitType:
-        unit_map: frozendict[str, UnitType] = frozendict(
+        unit_map: frozendict[ResourceType, UnitType] = frozendict(
             {  # pyrefly: ignore[bad-argument-count]
-                "coffee": UnitType.GROUND,
-                "mocha": UnitType.PUMP,
-                "cream": UnitType.VOID,
+                ResourceType.COFFEE: UnitType.GROUND,
+                ResourceType.MOCHA: UnitType.PUMP,
+                ResourceType.CREAM: UnitType.VOID,
             }
         )
         return unit_map.get(key, UnitType.LIQUID)

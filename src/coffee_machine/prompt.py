@@ -28,25 +28,25 @@ def get_prompt(
             try:
                 return int(user_input)
             except ValueError:
-                invalid_response(target_type=int)
+                on_invalid_response(target_type=int)
                 continue
 
         if target_type is str:
             if user_input.isalpha():
                 return user_input
 
-            invalid_response(target_type=str)
+            on_invalid_response(target_type=str)
 
 
 @overload
-def invalid_response(*, target_type: type[int]) -> str: ...
+def on_invalid_response(*, target_type: type[int]) -> str: ...
 
 
 @overload
-def invalid_response(*, target_type: type[str]) -> str: ...
+def on_invalid_response(*, target_type: type[str]) -> str: ...
 
 
 @DecoratorType.PRINT_IN_RED()
-def invalid_response(target_type: type[int] | type[str]) -> str:
+def on_invalid_response(target_type: type[int] | type[str]) -> str:
     output_type: str = "numbers" if target_type is int else "text"
     return f"Invalid option! Please enter only {output_type}."

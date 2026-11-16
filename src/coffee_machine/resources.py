@@ -1,7 +1,16 @@
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
+from enum import StrEnum, auto
 
 from .style.decorator_type import DecoratorType
+
+
+class ResourceType(StrEnum):
+    WATER = auto()
+    MILK = auto()
+    COFFEE = auto()
+    MOCHA = auto()
+    CREAM = auto()
 
 
 @dataclass(slots=True, kw_only=True)
@@ -71,14 +80,15 @@ class ResourceValidator:
         )
 
     def validate_resource(self, *, name: str, quantity: int) -> bool:
+
         if (titlized_name := name.title()) not in self.valid_resource_keys:
             self.on_error(
                 f"{titlized_name} not found in {self.valid_resource_keys}"
             )
             return False
 
-        if quantity > RESOURCES.get(name, 0):
-            self.on_error(f"Sorry, there is not enough {name.title()}.")
+        if quantity > RESOURCES.get(name.lower(), 0):
+            self.on_error(f"Sorry, there is not enough {titlized_name}.")
             return False
 
         return True

@@ -84,7 +84,6 @@ class DrinkIngredientRenderer:
 
 
 def get_drink_ingredients(*, drink: str) -> Ingredients:
-
     if drink not in DRINK_CONFIG:
         raise KeyError(f"{drink} not in DRINK_CONFIG")
 
