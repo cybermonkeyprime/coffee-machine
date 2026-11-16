@@ -16,29 +16,15 @@ class ResourceBase(Mapping[str, int]):
 @dataclass(slots=True, kw_only=True)
 class Resources(ResourceBase):
     def __setitem__(self, key: str, value: int) -> None:
-        error_pipeline: list[tuple[bool, KeyError | TypeError]] = [
-            self.on_missing_key(key),
-            self.on_invalid_type(key, value),
-        ]
-        for error, response in iter(error_pipeline):
-            if error:
-                raise response
+        if key not in self.__dataclass_fields__:
+            raise KeyError(f"'{key}' is not a valid field")
+
+        if not isinstance(value, int):
+            raise TypeError(
+                f"Value for '{key}' must be an int, got {type(value).__name__}"
+            )
 
         setattr(self, key, value)
-
-    def on_missing_key(self, key: str) -> tuple[bool, KeyError]:
-        return (
-            key not in self.__dataclass_fields__,
-            KeyError(f"'{key}' is not a valid field"),
-        )
-
-    def on_invalid_type(self, key: str, value: int) -> tuple[bool, TypeError]:
-        return (
-            not isinstance(value, int),
-            TypeError(
-                f"Value for '{key}' must be an int, got {type(value).__name__}"
-            ),
-        )
 
     def __getitem__(self, key: str) -> int:
         if key not in self.__dataclass_fields__:
@@ -85,30 +71,17 @@ class ResourceValidator:
         )
 
     def validate_resource(self, *, name: str, quantity: int) -> bool:
-        pipeline: list[tuple[bool, str]] = [
-            self.on_missing_resource_name(name),
-            self.on_insufficient_resource(name, quantity),
-        ]
-        for error, response in iter(pipeline):
-            if error:
-                self.on_error(message=response)
-                return False
+        if (titlized_name := name.title()) not in self.valid_resource_keys:
+            self.on_error(
+                f"{titlized_name} not found in {self.valid_resource_keys}"
+            )
+            return False
+
+        if quantity > RESOURCES.get(name, 0):
+            self.on_error(f"Sorry, there is not enough {name.title()}.")
+            return False
+
         return True
-
-    def on_missing_resource_name(self, name: str) -> tuple[bool, str]:
-        titlized_name: str = name.title()
-        return (
-            titlized_name not in self.valid_resource_keys,
-            f"{titlized_name} not found in {self.valid_resource_keys}",
-        )
-
-    def on_insufficient_resource(
-        self, name: str, quantity: int
-    ) -> tuple[bool, str]:
-        return (
-            quantity > RESOURCES.get(name, 0),
-            f"Sorry, there is not enough {name.title()}.",
-        )
 
     @DecoratorType.PRINT_IN_RED()
     def on_error(self, *, message):
