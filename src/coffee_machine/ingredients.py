@@ -1,4 +1,3 @@
-from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import StrEnum, auto
 
@@ -12,21 +11,8 @@ class UnitType(StrEnum):
     VOID = auto()
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(init=False, slots=True, kw_only=True)
 class Ingredients(ResourceBase):
-    def __getitem__(self, key: str) -> int:
-        # Crucial: This allows dictionary-style lookup: obj['a']
-        if key not in self.__dataclass_fields__:
-            raise KeyError(key)
-        return getattr(self, key)
-
-    def __iter__(self) -> Iterator:
-        # Crucial: This allows looping and dict conversion
-        return iter(self.__dataclass_fields__)
-
-    def __len__(self) -> int:
-        return len(self.__dataclass_fields__)
-
     @classmethod
     def get_units(cls, key) -> UnitType:
         unit_map: frozendict[ResourceType, UnitType] = frozendict(

@@ -1,5 +1,5 @@
 from collections.abc import Iterator, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum, auto
 
 from .style.decorator_type import DecoratorType
@@ -13,19 +13,22 @@ class ResourceType(StrEnum):
     CREAM = auto()
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(init=False, kw_only=True)
 class ResourceBase(Mapping[str, int]):
-    water: int = 0
-    milk: int = 0
-    coffee: int = 0
-    mocha: int = 0
-    cream: int = 0
+    _resources: dict[str, int] = field(
+        default_factory=lambda: {
+            resource.value: 0 for resource in ResourceType
+        }
+    )
 
+    def __init__(self, **kwargs: int) -> None:
+        self._resources = {resource.value: 0 for resource in ResourceType}
 
-@dataclass(slots=True, kw_only=True)
-class Resources(ResourceBase):
+        for key, value in kwargs.items():
+            self[key] = value
+
     def __setitem__(self, key: str, value: int) -> None:
-        if key not in self.__dataclass_fields__:
+        if key not in self._resources:
             raise KeyError(f"'{key}' is not a valid field")
 
         if not isinstance(value, int):
@@ -33,26 +36,30 @@ class Resources(ResourceBase):
                 f"Value for '{key}' must be an int, got {type(value).__name__}"
             )
 
-        setattr(self, key, value)
+        self._resources[key] = value
 
     def __getitem__(self, key: str) -> int:
-        if key not in self.__dataclass_fields__:
+        if key not in self._resources:
             raise KeyError(key)
-        return getattr(self, key)
 
-    def __iter__(self) -> Iterator:
-        return iter(self.__dataclass_fields__)
+        return self._resources[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._resources)
 
     def __len__(self) -> int:
-        return len(self.__dataclass_fields__)
+        return len(self._resources)
 
+
+@dataclass(init=False, slots=True, kw_only=True)
+class Resources(ResourceBase):
     @DecoratorType.PRINT_IN_YELLOW()
     def get_resource_info(self, key: str) -> str:
         from .ingredients import Ingredients, UnitType
 
         unit: UnitType = Ingredients.get_units(key)
 
-        base_output: str = f"{key.title()}: {getattr(self, key)}"
+        base_output: str = f"{key.title()}: {self[key]}"
 
         return base_output if unit == UnitType.VOID else f"{base_output}{unit}"
 
