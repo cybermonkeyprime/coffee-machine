@@ -4,6 +4,8 @@ from rich.console import Console
 
 from .style.decorator_type import DecoratorType
 
+TARGET_TYPE: type[TARGET_TYPE] = type[int | str]
+
 
 @overload
 def get_prompt(*, message: str, target_type: type[int]) -> int: ...
@@ -13,9 +15,7 @@ def get_prompt(*, message: str, target_type: type[int]) -> int: ...
 def get_prompt(*, message: str, target_type: type[str]) -> str: ...
 
 
-def get_prompt(
-    *, message: str, target_type: type[int] | type[str]
-) -> int | str:
+def get_prompt(*, message: str, target_type: TARGET_TYPE) -> int | str:
     console = Console()
 
     while True:
@@ -47,6 +47,6 @@ def on_invalid_response(*, target_type: type[str]) -> str: ...
 
 
 @DecoratorType.PRINT_IN_RED()
-def on_invalid_response(target_type: type[int] | type[str]) -> str:
+def on_invalid_response(target_type: TARGET_TYPE) -> str:
     output_type: str = "numbers" if target_type is int else "text"
     return f"Invalid option! Please enter only {output_type}."

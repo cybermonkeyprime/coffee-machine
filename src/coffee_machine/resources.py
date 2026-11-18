@@ -1,5 +1,5 @@
 from collections.abc import Iterator, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import StrEnum, auto
 
 from .style.decorator_type import DecoratorType
@@ -15,14 +15,10 @@ class ResourceType(StrEnum):
 
 @dataclass(init=False, kw_only=True)
 class ResourceBase(Mapping[str, int]):
-    _resources: dict[str, int] = field(
-        default_factory=lambda: {
+    def __init__(self, **kwargs: int) -> None:
+        self._resources: dict[str, int] = {
             resource.value: 0 for resource in ResourceType
         }
-    )
-
-    def __init__(self, **kwargs: int) -> None:
-        self._resources = {resource.value: 0 for resource in ResourceType}
 
         for key, value in kwargs.items():
             self[key] = value
@@ -59,7 +55,7 @@ class Resources(ResourceBase):
 
         unit: UnitType = Ingredients.get_units(key)
 
-        base_output: str = f"{key.title()}: {self[key]}"
+        base_output: str = f"{key.title()}: {self.get(key)}"
 
         return base_output if unit == UnitType.VOID else f"{base_output}{unit}"
 
